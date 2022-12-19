@@ -11,6 +11,7 @@
     "start:dev": "nodempn . -q",
     "test": "jest --passWithNoTests",
     "test:dev": "jest --watchAll --passWithNoTests",
+    "test:coverage": "jest --coverage --passWithNoTests",
     "prepare": "husky install"
   },
   "keywords": [],
