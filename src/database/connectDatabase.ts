@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const connectDatabase = async (mongoUrl: string) => {
-  await mongoose.connect(mongoUrl, { dbName: "coders-app-sso" });
+  await mongoose.connect(mongoUrl);
 
   mongoose.set("toJSON", {
     virtuals: true,
