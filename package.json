@@ -22,7 +22,9 @@
     "@types/debug": "^4.1.7",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.15",
+    "@types/jest": "^29.2.4",
     "@types/morgan": "^1.9.3",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "eslint": "^8.26.0",
@@ -34,6 +36,7 @@
     "jest-ts-webcompat-resolver": "^1.0.0",
     "lint-staged": "^13.1.0",
     "nodemon": "^2.0.20",
+    "supertest": "^6.3.3",
     "ts-jest": "^29.0.3",
     "typescript": "^4.8.4"
   },
