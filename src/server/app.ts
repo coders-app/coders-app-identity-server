@@ -11,4 +11,10 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
+app.get("/", async (req, res) => {
+  res.json({
+    message: "Pong 🏓",
+  });
+});
+
 export default app;
