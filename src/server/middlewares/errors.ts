@@ -1,9 +1,9 @@
-import "../loadEnvironments.js";
+import "../../loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import type { NextFunction, Request, Response } from "express";
-import type CustomError from "../CustomError/CustomError.js";
-import httpStatusCodes from "../utils/httpStatusCodes.js";
+import type CustomError from "../../CustomError/CustomError.js";
+import httpStatusCodes from "../../utils/httpStatusCodes.js";
 
 const {
   serverErrors: { badRequestCode },
