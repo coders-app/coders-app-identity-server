@@ -18,4 +18,22 @@ describe("Given a CustomError", () => {
       expect(customError).toHaveProperty("statusCode", statusCode);
     });
   });
+
+  describe("When it is instantiated with code 'EADDRINUSE'", () => {
+    test("Then it should create an object with code 'EADDRINUSE'", () => {
+      const privateMessage = "";
+      const statusCode = 0;
+      const publicMessage = "";
+      const code = "EADDRINUSE";
+
+      const customError = new CustomError(
+        privateMessage,
+        statusCode,
+        publicMessage,
+        code
+      );
+
+      expect(customError).toHaveProperty("code", code);
+    });
+  });
 });
