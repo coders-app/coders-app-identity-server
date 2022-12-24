@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 import { environment } from "../loadEnvironments.js";
 
 const connectDatabase = async (mongoDbUrl: string) => {
-  await mongoose.connect(mongoDbUrl);
-
+  mongoose.set("strictQuery", false);
   mongoose.set("debug", environment.mongoDbDebug);
   mongoose.set("toJSON", {
     virtuals: true,
@@ -15,6 +14,8 @@ const connectDatabase = async (mongoDbUrl: string) => {
       return ret;
     },
   });
+
+  await mongoose.connect(mongoDbUrl);
 };
 
 export default connectDatabase;
