@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
+import { environment } from "../loadEnvironments.js";
 
-const connectDatabase = async (mongoUrl: string) => {
-  await mongoose.connect(mongoUrl);
+const connectDatabase = async (mongoDbUrl: string) => {
+  await mongoose.connect(mongoDbUrl);
 
+  mongoose.set("debug", environment.mongoDbDebug);
   mongoose.set("toJSON", {
     virtuals: true,
     transform(doc, ret) {

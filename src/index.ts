@@ -1,4 +1,4 @@
-import { mongoUrl, port } from "./loadEnvironments.js";
+import { environment } from "./loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import { mongo } from "mongoose";
@@ -10,10 +10,12 @@ const debug = debugCreator("identity-server:root");
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { MongoServerError } = mongo;
 
+const { port, mongoDbUrl } = environment;
+
 try {
   await startServer(+port);
   debug(chalk.blue(`Server listening on port ${port}`));
-  await connectDatabase(mongoUrl);
+  await connectDatabase(mongoDbUrl);
   debug(chalk.blue("Connected to database"));
 } catch (error: unknown) {
   if (error instanceof MongoServerError) {
