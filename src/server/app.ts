@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import paths from "./routes/paths.js";
 import pingPongProtocolRouter from "./routes/pingPongProtocolRouter/pingPongProtocolRouter.js";
+import generalError, { unknownEndpoint } from "./middlewares/errors.js";
 
 const { baseUrl } = paths;
 
@@ -16,5 +17,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(baseUrl, pingPongProtocolRouter);
+
+app.use(unknownEndpoint);
+app.use(generalError);
 
 export default app;
