@@ -1,5 +1,5 @@
-import type { Response } from "express";
-import generalError from "./errors";
+import type { Request, NextFunction, Response } from "express";
+import generalError, { unknownEndpoint } from "./errors";
 import CustomError from "../../CustomError/CustomError";
 import httpStatusCodes from "../../utils/httpStatusCodes";
 
@@ -45,6 +45,26 @@ describe("Given the generalError middleware", () => {
 
       expect(res.status).toHaveBeenCalledWith(notFoundCode);
       expect(res.json).toHaveBeenCalledWith({ error: publicMessage });
+    });
+  });
+});
+
+describe("Given an unknownEndpoint middleware", () => {
+  describe("When it receives a request with path /not-found", () => {
+    test("Then it should invoke next with a custom error with message 'Unknown endpoint: /not-found', status code 404 and public message 'Unknown endpoint'", () => {
+      const path = "/not-found";
+      const errorMessage = "Unknown endpoint";
+      const req: Partial<Request> = { path };
+      const next: NextFunction = jest.fn();
+      const expectedError = new CustomError(
+        `${errorMessage}: ${path}`,
+        notFoundCode,
+        errorMessage
+      );
+
+      unknownEndpoint(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(expectedError);
     });
   });
 });
