@@ -2,11 +2,12 @@ import "../../loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import type { NextFunction, Request, Response } from "express";
-import type CustomError from "../../CustomError/CustomError.js";
+import CustomError from "../../CustomError/CustomError.js";
 import httpStatusCodes from "../../utils/httpStatusCodes.js";
 
 const {
   serverErrors: { internalServerErrorCode },
+  clientErrors: { notFoundCode },
 } = httpStatusCodes;
 
 const debug = debugCreator("identify-server:middlewares:errors");
@@ -25,6 +26,22 @@ const generalError = (
     error.publicMessage || "There was an error on the server";
 
   res.status(statusCode).json({ error: publicMessage });
+};
+
+export const unknownEndpoint = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { path } = req;
+
+  next(
+    new CustomError(
+      `Unknown endpoint: ${path}`,
+      notFoundCode,
+      "Endpoint not found"
+    )
+  );
 };
 
 export default generalError;
