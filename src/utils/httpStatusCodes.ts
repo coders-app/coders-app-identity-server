@@ -8,7 +8,7 @@ const httpStatusCodes = {
   },
 
   serverErrors: {
-    badRequestCode: 500,
+    internalServerErrorCode: 500,
   },
 };
 

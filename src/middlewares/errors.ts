@@ -1,12 +1,12 @@
-import "../../loadEnvironments.js";
+import "../loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import type { NextFunction, Request, Response } from "express";
-import type CustomError from "../../CustomError/CustomError.js";
-import httpStatusCodes from "../../utils/httpStatusCodes.js";
+import type CustomError from "../CustomError/CustomError.js";
+import httpStatusCodes from "../utils/httpStatusCodes.js";
 
 const {
-  serverErrors: { internalServerErrorCode },
+  serverErrors: { internalServerErrorCode: badRequestCode },
 } = httpStatusCodes;
 
 const debug = debugCreator("identify-server:middlewares:errors");
@@ -20,7 +20,7 @@ const generalError = (
 ) => {
   debug(chalk.bold.red(error.message));
 
-  const statusCode = error.statusCode || internalServerErrorCode;
+  const statusCode = error.statusCode || badRequestCode;
   const publicMessage =
     error.publicMessage || "There was an error on the server";
 
