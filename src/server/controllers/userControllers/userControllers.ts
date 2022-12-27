@@ -59,6 +59,18 @@ export const loginUser = async (
       next(
         new CustomError("User not found", unauthorizedCode, unauthorizedMessage)
       );
+      return;
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      next(
+        new CustomError(
+          "Incorrect password",
+          unauthorizedCode,
+          unauthorizedMessage
+        )
+      );
+      return;
     }
   } catch (error: unknown) {
     next(error);

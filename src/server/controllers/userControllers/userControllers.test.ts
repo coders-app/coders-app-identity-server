@@ -59,6 +59,8 @@ describe("Given a registerUser Controller", () => {
 });
 
 describe("Given a loginUser controller", () => {
+  const incorrectCredentialsMessage = "Incorrect email or password";
+
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
       const luisitoCredentials: LoginCredentials = {
@@ -73,12 +75,36 @@ describe("Given a loginUser controller", () => {
       const userNotFoundError = new CustomError(
         "User not found",
         unauthorizedCode,
-        "Incorrect email or password"
+        incorrectCredentialsMessage
       );
 
       await loginUser(req as Request, null, next);
 
       expect(next).toHaveBeenCalledWith(userNotFoundError);
+    });
+  });
+
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is incorrect, and a next function", () => {
+    test("Then next should be invoked with message 'Incorrect password', status code 401 and public message 'Incorrect email or password'", async () => {
+      const luisitoCredentials: LoginCredentials = {
+        email: "luisito@isdicoders.com",
+        password: "luisito",
+      };
+
+      req.body = luisitoCredentials;
+
+      User.findOne = jest.fn().mockResolvedValueOnce(luisitoCredentials);
+      bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
+
+      const incorrectPasswordError = new CustomError(
+        "Incorrect password",
+        unauthorizedCode,
+        incorrectCredentialsMessage
+      );
+
+      await loginUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(incorrectPasswordError);
     });
   });
 });
