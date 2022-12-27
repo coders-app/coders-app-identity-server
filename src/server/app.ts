@@ -7,8 +7,9 @@ import pingPongProtocolRouter from "./routes/pingPongProtocolRouter/pingPongProt
 import corsOptions from "./cors/corsOptions.js";
 import generalError, { unknownEndpoint } from "./middlewares/errors.js";
 import openApiDocument from "../openapi/index.js";
+import usersRouter from "./routes/usersRouter/usersRouter.js";
 
-const { baseUrl, apiDocs } = paths;
+const { baseUrl, apiDocs, users } = paths;
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use(baseUrl, pingPongProtocolRouter);
 app.use(apiDocs, swaggerUi.serve, swaggerUi.setup(openApiDocument));
+app.use(users, usersRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);

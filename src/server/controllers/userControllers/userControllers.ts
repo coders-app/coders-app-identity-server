@@ -23,6 +23,7 @@ export const registerUser = async (
   next: NextFunction
 ) => {
   const { name, password, email } = req.body;
+
   try {
     const hashedPassword = await bcrypt.hash(password, saltLength);
 
