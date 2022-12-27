@@ -1,8 +1,61 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Projects API",
+    "title": "Identity Server API",
     "version": "1.0.0"
   },
-  "paths": {}
+  "components": {
+    "schemas": {
+      "User Data": {
+        "type": "object",
+        "required": ["name", "password", "email"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Luis"
+          },
+          "password": {
+            "type": "string",
+            "example": "q65T!34mBC8h3#ul7K"
+          },
+          "email": {
+            "type": "string",
+            "example": "luis@email.com"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Creates a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "63aa9f15058e3f351c5473fa",
+                  "name": "Luis",
+                  "email": "luis@email.com"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
