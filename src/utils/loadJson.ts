@@ -4,8 +4,7 @@ import fs from "fs";
 /* This is a workaround from https://stackoverflow.com/a/73747606/574218 */
 /* It must be removed when Node's import assertions are stable */
 export const loadJson = <T>(path: string) => {
-  const url = new URL(path, import.meta.url);
-  const file = fs.readFileSync(url).toString();
+  const file = fs.readFileSync(path).toString();
   const data = JSON.parse(file) as T;
   return data;
 };
