@@ -20,3 +20,4 @@ jobs:
           ORIGIN_WHITELIST: ${{ secrets.ORIGIN_WHITELIST }}
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           DEBUG: ${{ secrets.DEBUG }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}

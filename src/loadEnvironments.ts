@@ -7,6 +7,7 @@ const {
   MONGODB_URL: mongoDbUrl,
   MONGODB_DEBUG: mongoDbDebug,
   ORIGIN_WHITELIST: originWhitelist,
+  JWT_SECRET: jwtSecret,
 } = process.env;
 
 export const environment = {
@@ -14,4 +15,5 @@ export const environment = {
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
   originWhitelist: originWhitelist.split(","),
+  jwtSecret,
 };
