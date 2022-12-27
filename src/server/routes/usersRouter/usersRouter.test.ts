@@ -12,7 +12,7 @@ const { users, register } = paths;
 
 const {
   successCodes: { createdCode },
-  clientErrors: { conflictCode },
+  clientErrors: { conflictCode, badRequestCode },
 } = httpStatusCodes;
 
 let server: MongoMemoryServer;
@@ -70,6 +70,46 @@ describe("Given a POST /users/register endpoint", () => {
         .expect(conflictCode);
 
       expect(response.body).toHaveProperty("error", expectedError);
+    });
+  });
+
+  describe("When it receives a request with name, email, password empty", () => {
+    test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Password shouldn't be empty, Email shouldn't be empty'", async () => {
+      const emptyUser: Partial<UserStructure> = {
+        name: "",
+        email: "",
+        password: "",
+      };
+      const expectedMessage = [
+        "Name shouldn't be empty",
+        "Password shouldn't be empty",
+        "Email shouldn't be empty",
+      ].join("\n");
+
+      const response = await request(app)
+        .post(`${users}${register}`)
+        .send(emptyUser)
+        .expect(badRequestCode);
+
+      expect(response.body).toHaveProperty("error", expectedMessage);
+    });
+  });
+
+  describe("When it receives a request with name 'Luis', email 'luis.com' and password '12345'", () => {
+    test("Then it should respond with status 400 and 'Password should have 8 characters minimum'", async () => {
+      const newUser = {
+        name: "Luis",
+        email: "luis@isdicoder.com",
+        password: "12345",
+      };
+      const expectedMessage = "Password should have 8 characters minimum";
+
+      const response = await request(app)
+        .post(`${users}${register}`)
+        .send(newUser)
+        .expect(badRequestCode);
+
+      expect(response.body).toHaveProperty("error", expectedMessage);
     });
   });
 });
