@@ -10,6 +10,5 @@ module.exports = {
     "!src/utils/loadJson.ts",
     "!src/server/startServer.ts",
     "!src/database/connectDatabase.ts",
-    "!src/setupTests.ts",
   ],
 };
