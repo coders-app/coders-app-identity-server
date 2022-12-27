@@ -6,11 +6,13 @@ import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import type { UserStructure } from "../../../database/models/User";
+import User from "../../../database/models/User";
 
 const { users, register } = paths;
 
 const {
   successCodes: { createdCode },
+  clientErrors: { conflictCode },
 } = httpStatusCodes;
 
 let server: MongoMemoryServer;
@@ -45,6 +47,29 @@ describe("Given a POST /users/register endpoint", () => {
 
       expect(name).toBe(newUser.name);
       expect(email).toBe(newUser.email);
+    });
+  });
+
+  describe("When it receives a request with name 'Marta', email 'marta@isdicoders.com', password 'martita123' in the body but that user is already registered", () => {
+    const existingUser = {
+      name: "Marta",
+      email: "marta@isdicoders.com",
+      password: "martita123",
+    };
+
+    beforeEach(async () => {
+      await User.create(existingUser);
+    });
+
+    test("Then it should respond with code 409 and 'Error creating a new user'", async () => {
+      const expectedError = "Error creating a new user";
+
+      const response = await request(app)
+        .post(`${users}${register}`)
+        .send(existingUser)
+        .expect(conflictCode);
+
+      expect(response.body).toHaveProperty("error", expectedError);
     });
   });
 });
