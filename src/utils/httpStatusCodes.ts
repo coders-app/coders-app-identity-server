@@ -5,8 +5,8 @@ const httpStatusCodes = {
   },
 
   clientErrors: {
-    notFoundCode: 404,
     badRequestCode: 400,
+    notFoundCode: 404,
     conflictCode: 409,
   },
 

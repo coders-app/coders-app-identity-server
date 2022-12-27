@@ -16,3 +16,7 @@ jobs:
 
       - name: Testing
         run: npm test
+        env:
+          ORIGIN_WHITELIST: ${{ secrets.ORIGIN_WHITELIST }}
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          DEBUG: ${{ secrets.DEBUG }}
