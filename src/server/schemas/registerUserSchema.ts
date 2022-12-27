@@ -13,20 +13,20 @@ const registerUserSchema = {
     name: Joi.string()
       .required()
       .messages({
-        [stringEmpty]: "Name couldn't be empty",
+        [stringEmpty]: "Name shouldn't be empty",
       }),
     password: Joi.string()
       .min(8)
       .required()
       .messages({
         [stringMin]: "Password should have 8 characters minimum",
-        [stringEmpty]: "Password couldn't be empty",
+        [stringEmpty]: "Password shouldn't be empty",
       }),
     email: Joi.string()
       .required()
       .email()
       .messages({
-        [stringEmpty]: "Email couldn't be empty",
+        [stringEmpty]: "Email shouldn't be empty",
         [emailInvalid]: "Incorrect email format",
       }),
   }),
