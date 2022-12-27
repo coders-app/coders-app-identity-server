@@ -19,6 +19,7 @@ const userSchema = new Schema(
     },
     isActive: {
       type: Boolean,
+      default: false,
     },
   },
   {
