@@ -3,8 +3,24 @@ import app from "./app";
 import httpStatusCodes from "../utils/httpStatusCodes";
 
 const {
-  clientErrors: { notFoundCode },
+  clientErrors: { badRequestCode, notFoundCode },
 } = httpStatusCodes;
+
+describe("Given a GET / endpoint", () => {
+  describe("When it receives a request from an origin that is not whitelisted", () => {
+    test("Then it should respond with status 400 and the message 'Blocked by CORS'", async () => {
+      const expectedMessage = "Not allowed by CORS";
+      const unknownOrigin = "http://localhost:1234";
+
+      const response = await request(app)
+        .get("/")
+        .set("origin", unknownOrigin)
+        .expect(badRequestCode);
+
+      expect(response.body).toHaveProperty("error", expectedMessage);
+    });
+  });
+});
 
 describe("Given a GET /not-found endpoint", () => {
   describe("When it receives a request", () => {

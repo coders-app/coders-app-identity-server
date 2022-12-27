@@ -5,7 +5,7 @@ import httpStatusCodes from "../../../utils/httpStatusCodes";
 
 const { baseUrl } = paths;
 const {
-  successCode: { okCode },
+  successCodes: { okCode },
 } = httpStatusCodes;
 
 describe("Given a GET / endpoint", () => {
