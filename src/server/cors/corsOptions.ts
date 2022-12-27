@@ -1,7 +1,7 @@
 import type { CorsOptions } from "cors";
-import { environment } from "../../loadEnvironments";
-import CustomError from "../../CustomError/CustomError";
-import httpStatusCodes from "../../utils/httpStatusCodes";
+import { environment } from "../../loadEnvironments.js";
+import CustomError from "../../CustomError/CustomError.js";
+import httpStatusCodes from "../../utils/httpStatusCodes.js";
 
 const { originWhitelist } = environment;
 
@@ -18,9 +18,9 @@ const corsOptions: CorsOptions = {
 
     callback(
       new CustomError(
-        `${requestOrigin} blocked by CORS Policy`,
+        `${requestOrigin} blocked by CORS policy`,
         badRequestCode,
-        "Blocked by CORS"
+        "Not allowed by CORS"
       ),
       requestOrigin
     );
