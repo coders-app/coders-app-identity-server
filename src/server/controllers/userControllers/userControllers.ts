@@ -3,22 +3,21 @@ import type { NextFunction, Response, Request } from "express";
 import CustomError from "../../../CustomError/CustomError.js";
 import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
-import { environment } from "../../../loadEnvironments.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 
-const { saltLength } = environment;
+const saltLength = 10;
 
 const {
   successCodes: { createdCode },
-  clientErrors: { badRequestCode },
+  clientErrors: { conflictCode },
 } = httpStatusCodes;
 
 export const registerUser = async (
-  req: Request,
+  req: Request<Record<string, unknown>, Record<string, unknown>, UserStructure>,
   res: Response,
   next: NextFunction
 ) => {
-  const { name, password, email } = req.body as UserStructure;
+  const { name, password, email } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, saltLength);
 
@@ -32,7 +31,7 @@ export const registerUser = async (
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
-      badRequestCode,
+      conflictCode,
       "Error creating a new user"
     );
     next(customError);
