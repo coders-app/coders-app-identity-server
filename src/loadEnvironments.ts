@@ -12,4 +12,5 @@ export const environment = {
   port,
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
+  saltLength: 10,
 };
