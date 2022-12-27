@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import type { InferSchemaType } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -19,6 +20,7 @@ const userSchema = new Schema(
     },
     isActive: {
       type: Boolean,
+      default: false,
     },
   },
   {
@@ -27,5 +29,7 @@ const userSchema = new Schema(
 );
 
 const User = model("User", userSchema, "users");
+
+export type UserStructure = InferSchemaType<typeof userSchema>;
 
 export default User;
