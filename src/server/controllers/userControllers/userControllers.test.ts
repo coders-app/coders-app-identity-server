@@ -103,15 +103,17 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists and is active", () => {
     test("Then it should invoke the response's status method with 200 and json with a token", async () => {
       req.body = luisitoCredentials;
       const userId = "testid";
       const token = "testtoken";
 
-      User.findOne = jest
-        .fn()
-        .mockResolvedValueOnce({ ...luisitoCredentials, _id: userId });
+      User.findOne = jest.fn().mockResolvedValueOnce({
+        ...luisitoCredentials,
+        _id: userId,
+        isActive: true,
+      });
 
       bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
 
@@ -121,6 +123,30 @@ describe("Given a loginUser controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(okCode);
       expect(res.json).toHaveBeenCalledWith({ token });
+    });
+  });
+
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists but is inactive", () => {
+    test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
+      req.body = luisitoCredentials;
+      const userId = "testid";
+      const inactiveUserError = new CustomError(
+        "User is inactive",
+        unauthorizedCode,
+        "User is inactive, contact your administrator if you think this is a mistake"
+      );
+
+      User.findOne = jest.fn().mockResolvedValueOnce({
+        ...luisitoCredentials,
+        _id: userId,
+        isActive: false,
+      });
+
+      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
+
+      await loginUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(inactiveUserError);
     });
   });
 

@@ -77,6 +77,16 @@ export const loginUser = async (
       return;
     }
 
+    if (!user.isActive) {
+      next(
+        new CustomError(
+          "User is inactive",
+          401,
+          "User is inactive, contact your administrator if you think this is a mistake"
+        )
+      );
+    }
+
     const tokenPayload: CustomTokenPayload = {
       name: user.name,
       id: user._id.toString(),
