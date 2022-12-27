@@ -1,10 +1,13 @@
 const httpStatusCodes = {
-  successCode: {
+  successCodes: {
     okCode: 200,
+    createdCode: 201,
   },
 
   clientErrors: {
     notFoundCode: 404,
+    badRequestCode: 400,
+    conflictCode: 409,
   },
 
   serverErrors: {
