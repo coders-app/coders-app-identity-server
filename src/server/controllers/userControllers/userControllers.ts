@@ -1,15 +1,19 @@
 import bcrypt from "bcryptjs";
 import type { NextFunction, Response, Request } from "express";
+import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
 import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import type { LoginCredentials } from "./types.js";
+import type { CustomTokenPayload, LoginCredentials } from "./types.js";
+import { environment } from "../../../loadEnvironments.js";
+
+const { jwtSecret } = environment;
 
 const saltLength = 10;
 
 const {
-  successCodes: { createdCode },
+  successCodes: { createdCode, okCode },
   clientErrors: { conflictCode, unauthorizedCode },
 } = httpStatusCodes;
 
@@ -72,6 +76,15 @@ export const loginUser = async (
       );
       return;
     }
+
+    const tokenPayload: CustomTokenPayload = {
+      name: user.name,
+      id: user._id.toString(),
+    };
+
+    const token = jwt.sign(tokenPayload, jwtSecret);
+
+    res.status(okCode).json({ token });
   } catch (error: unknown) {
     next(error);
   }
