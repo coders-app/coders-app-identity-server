@@ -3,10 +3,13 @@ import type { NextFunction, Request, Response } from "express";
 import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import { registerUser } from "./userControllers.js";
+import { loginUser, registerUser } from "./userControllers.js";
+import CustomError from "../../../CustomError/CustomError.js";
+import type { LoginCredentials } from "./types.js";
 
 const {
   successCodes: { createdCode },
+  clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 
 beforeEach(() => {
@@ -51,6 +54,31 @@ describe("Given a registerUser Controller", () => {
       await registerUser(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given a loginUser controller", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
+    test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
+      const luisitoCredentials: LoginCredentials = {
+        email: "luisito@isdicoders.com",
+        password: "luisito",
+      };
+
+      req.body = luisitoCredentials;
+
+      User.findOne = jest.fn().mockResolvedValueOnce(null);
+
+      const userNotFoundError = new CustomError(
+        "User not found",
+        unauthorizedCode,
+        "Incorrect email or password"
+      );
+
+      await loginUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(userNotFoundError);
     });
   });
 });

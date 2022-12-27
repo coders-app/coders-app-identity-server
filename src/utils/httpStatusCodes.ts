@@ -6,6 +6,7 @@ const httpStatusCodes = {
 
   clientErrors: {
     badRequestCode: 400,
+    unauthorizedCode: 401,
     notFoundCode: 404,
     conflictCode: 409,
   },
