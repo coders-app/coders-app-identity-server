@@ -123,4 +123,19 @@ describe("Given a loginUser controller", () => {
       expect(res.json).toHaveBeenCalledWith({ token });
     });
   });
+
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and bcrypt rejects, and a next function", () => {
+    test("Then it should invoke next with the error thrown by bcrypt", async () => {
+      const bcryptError = new Error("Bcrypt error");
+
+      req.body = luisitoCredentials;
+
+      User.findOne = jest.fn().mockResolvedValueOnce(luisitoCredentials);
+      bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
+
+      await loginUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(bcryptError);
+    });
+  });
 });
