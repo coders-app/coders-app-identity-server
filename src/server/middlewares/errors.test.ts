@@ -4,7 +4,7 @@ import CustomError from "../../CustomError/CustomError";
 import httpStatusCodes from "../../utils/httpStatusCodes";
 
 const {
-  serverErrors: { badRequestCode },
+  serverErrors: { internalServerErrorCode },
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
 
@@ -26,7 +26,7 @@ describe("Given the generalError middleware", () => {
 
       generalError(error as CustomError, null, res as Response, null);
 
-      expect(res.status).toHaveBeenCalledWith(badRequestCode);
+      expect(res.status).toHaveBeenCalledWith(internalServerErrorCode);
       expect(res.json).toHaveBeenCalledWith({ error: expectedPublicMessage });
     });
   });

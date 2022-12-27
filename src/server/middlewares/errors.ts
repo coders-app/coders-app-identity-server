@@ -6,7 +6,7 @@ import type CustomError from "../../CustomError/CustomError.js";
 import httpStatusCodes from "../../utils/httpStatusCodes.js";
 
 const {
-  serverErrors: { badRequestCode },
+  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 const debug = debugCreator("identify-server:middlewares:errors");
@@ -20,7 +20,7 @@ const generalError = (
 ) => {
   debug(chalk.bold.red(error.message));
 
-  const statusCode = error.statusCode || badRequestCode;
+  const statusCode = error.statusCode || internalServerErrorCode;
   const publicMessage =
     error.publicMessage || "There was an error on the server";
 
