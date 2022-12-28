@@ -61,30 +61,26 @@ export const loginUser = async (
     const unauthorizedMessage = "Incorrect email or password";
 
     if (!user) {
-      next(
-        new CustomError("User not found", unauthorizedCode, unauthorizedMessage)
+      throw new CustomError(
+        "User not found",
+        unauthorizedCode,
+        unauthorizedMessage
       );
-      return;
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      next(
-        new CustomError(
-          "Incorrect password",
-          unauthorizedCode,
-          unauthorizedMessage
-        )
+      throw new CustomError(
+        "Incorrect password",
+        unauthorizedCode,
+        unauthorizedMessage
       );
-      return;
     }
 
     if (!user.isActive) {
-      next(
-        new CustomError(
-          "User is inactive",
-          401,
-          "User is inactive, contact your administrator if you think this is a mistake"
-        )
+      throw new CustomError(
+        "User is inactive",
+        401,
+        "User is inactive, contact your administrator if you think this is a mistake"
       );
     }
 
