@@ -1,6 +1,6 @@
 import { Joi } from "express-validation";
 import type { UserStructure } from "../../database/models/User";
-import joiTypesError from "./joiTypesErrors";
+import joiTypesError from "./joiTypesErrors.js";
 
 export interface RegisterUserBody extends UserStructure {
   repeatedPassword: string;
@@ -28,7 +28,8 @@ const registerUserSchema = {
       .messages({
         [stringEmpty]: "Email shouldn't be empty",
         [emailInvalid]: "Incorrect email format",
-      }),
+      })
+      .label("Email"),
   }),
 };
 
