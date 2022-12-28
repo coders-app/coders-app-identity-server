@@ -45,7 +45,13 @@ export const registerUser = async (
       return;
     }
 
-    next(error);
+    const customError = new CustomError(
+      (error as Error).message,
+      conflictCode,
+      "Error creating a new user"
+    );
+
+    next(customError);
   }
 };
 

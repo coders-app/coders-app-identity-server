@@ -32,6 +32,7 @@ describe("Given a registerUser Controller", () => {
       const registerBody: Partial<UserStructure> = {
         name: "user",
         password: "user123",
+        email: "user@gmail.com",
       };
       req.body = registerBody;
       const hashedPassword = "hashedpassword";
@@ -160,8 +161,13 @@ describe("Given a loginUser controller", () => {
       bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
 
       await loginUser(req as Request, null, next);
+      const customErrorBcrypt = new CustomError(
+        "Bcrypt error",
+        409,
+        "Error creating a new user"
+      );
 
-      expect(next).toHaveBeenCalledWith(bcryptError);
+      expect(next).toHaveBeenCalledWith(customErrorBcrypt);
     });
   });
 });
