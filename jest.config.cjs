@@ -10,6 +10,7 @@ module.exports = {
     "!src/index.ts",
     "!src/setupTests.ts",
     "!src/utils/loadJson.ts",
+    "!src/openapi/*.ts",
     "!src/server/startServer.ts",
     "!src/database/connectDatabase.ts",
   ],
