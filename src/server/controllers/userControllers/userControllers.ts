@@ -1,15 +1,20 @@
 import bcrypt from "bcryptjs";
 import type { NextFunction, Response, Request } from "express";
+import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
 import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
+import type { CustomTokenPayload, LoginCredentials } from "./types.js";
+import { environment } from "../../../loadEnvironments.js";
+
+const { jwtSecret } = environment;
 
 const saltLength = 10;
 
 const {
-  successCodes: { createdCode },
-  clientErrors: { conflictCode },
+  successCodes: { createdCode, okCode },
+  clientErrors: { conflictCode, unauthorizedCode },
 } = httpStatusCodes;
 
 export const registerUser = async (
@@ -36,5 +41,58 @@ export const registerUser = async (
       "Error creating a new user"
     );
     next(customError);
+  }
+};
+
+export const loginUser = async (
+  req: Request<
+    Record<string, unknown>,
+    Record<string, unknown>,
+    LoginCredentials
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    const unauthorizedMessage = "Incorrect email or password";
+
+    if (!user) {
+      throw new CustomError(
+        "User not found",
+        unauthorizedCode,
+        unauthorizedMessage
+      );
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new CustomError(
+        "Incorrect password",
+        unauthorizedCode,
+        unauthorizedMessage
+      );
+    }
+
+    if (!user.isActive) {
+      throw new CustomError(
+        "User is inactive",
+        401,
+        "User is inactive, contact your administrator if you think this is a mistake"
+      );
+    }
+
+    const tokenPayload: CustomTokenPayload = {
+      name: user.name,
+      id: user._id.toString(),
+    };
+
+    const token = jwt.sign(tokenPayload, jwtSecret);
+
+    res.status(okCode).json({ token });
+  } catch (error: unknown) {
+    next(error);
   }
 };

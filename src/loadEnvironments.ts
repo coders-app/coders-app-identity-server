@@ -7,6 +7,7 @@ const {
   MONGODB_URL: mongoDbUrl,
   MONGODB_DEBUG: mongoDbDebug,
   ORIGIN_WHITELIST: originWhitelist,
+  JWT_SECRET: jwtSecret,
   BASIC_AUTH_USERNAME: basicAuthUsername,
   BASIC_AUTH_PASSWORD: basicAuthPassword,
 } = process.env;
@@ -16,6 +17,7 @@ export const environment = {
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
   originWhitelist: originWhitelist.split(","),
+  jwtSecret,
   basicAuth: {
     username: basicAuthUsername,
     password: basicAuthPassword,
