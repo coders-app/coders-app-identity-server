@@ -11,4 +11,4 @@ const userFactory = Factory.define<UserStructure>(() => ({
   updatedAt: faker.date.recent(),
 }));
 
-export const getRandomUser = () => userFactory.build();
+export const getMockUser = () => userFactory.build();
