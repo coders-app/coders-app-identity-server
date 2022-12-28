@@ -62,7 +62,7 @@ describe("Given a POST /users/register endpoint", () => {
     });
 
     test("Then it should respond with code 409 and 'Error creating a new user'", async () => {
-      const expectedError = "Error creating a new user";
+      const expectedError = "User already exists";
 
       const response = await request(app)
         .post(`${users}${register}`)

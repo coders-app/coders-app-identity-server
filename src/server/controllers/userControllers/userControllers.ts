@@ -35,12 +35,17 @@ export const registerUser = async (
 
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
   } catch (error: unknown) {
-    const customError = new CustomError(
-      (error as Error).message,
-      conflictCode,
-      "Error creating a new user"
-    );
-    next(customError);
+    if ((error as Error).message.includes("duplicate key")) {
+      const customErrorDuplicateKey = new CustomError(
+        (error as Error).message,
+        conflictCode,
+        "User already exists"
+      );
+      next(customErrorDuplicateKey);
+      return;
+    }
+
+    next(error);
   }
 };
 
