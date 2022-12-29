@@ -9,7 +9,10 @@ import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import type { UserStructure } from "../../../database/models/User";
 import User from "../../../database/models/User";
-import { getMockUser } from "../../../factories/usersFactory";
+import {
+  getMockUser,
+  getMockUserCredentials,
+} from "../../../factories/usersFactory";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types";
 
 const { users, register, login } = paths;
@@ -36,13 +39,9 @@ describe("Given a POST /users/register endpoint", () => {
     await User.deleteMany({});
   });
 
-  describe("When it receives a request with name 'Luis', email 'luis@isdicoders.com' and password 'luisito123' in the body", () => {
+  describe("When it receives a request with a name, email and password in the body", () => {
     test("Then it should respond with status 201 and the user's credentials in the body", async () => {
-      const newUser = {
-        name: "Luis",
-        email: "luis@isdicoders.com",
-        password: "luisito123",
-      };
+      const newUser = getMockUserCredentials();
 
       const response: { body: { user: UserStructure } } = await request(app)
         .post(`${users}${register}`)
@@ -58,12 +57,8 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name 'Marta', email 'marta@isdicoders.com', password 'martita123' in the body but that user is already registered", () => {
-    const existingUser = {
-      name: "Marta",
-      email: "marta@isdicoders.com",
-      password: "martita123",
-    };
+  describe("When it receives a request with a name, email and password in the body, but that user is already registered", () => {
+    const existingUser = getMockUserCredentials();
 
     beforeEach(async () => {
       await User.create(existingUser);
@@ -103,13 +98,9 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name 'Luis', email 'luis.com' and password '12345'", () => {
+  describe("When it receives a request with a name, email and password '12345'", () => {
     test("Then it should respond with status 400 and 'Password should have 8 characters minimum'", async () => {
-      const newUser = {
-        name: "Luis",
-        email: "luis@isdicoder.com",
-        password: "12345",
-      };
+      const newUser = getMockUserCredentials({ password: "12345" });
       const expectedMessage = "Password should have 8 characters minimum";
 
       const response = await request(app)
