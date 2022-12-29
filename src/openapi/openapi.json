@@ -57,7 +57,7 @@
             }
           },
           "409": {
-            "description": "Error creating a new user"
+            "description": "User already exists"
           }
         }
       }
