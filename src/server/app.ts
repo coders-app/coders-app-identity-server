@@ -10,6 +10,7 @@ import generalError, { unknownEndpoint } from "./middlewares/errors.js";
 import openApiDocument from "../openapi/index.js";
 import usersRouter from "./routes/usersRouter/usersRouter.js";
 import { environment } from "../loadEnvironments.js";
+import verifyTokenRouter from "./routes/verifyTokenRouter/verifyTokenRouter.js";
 
 const { baseUrl, apiDocs, users } = paths;
 
@@ -35,6 +36,7 @@ app.use(
   swaggerUi.setup(openApiDocument)
 );
 app.use(users, usersRouter);
+app.use(users, verifyTokenRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
