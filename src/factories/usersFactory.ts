@@ -12,14 +12,16 @@ const userFactory = Factory.define<UserStructure>(() => ({
   updatedAt: faker.date.recent(),
 }));
 
-const registerUserFactory = Factory.define<Partial<RegisterUserBody>>(() => ({
-  name: faker.internet.userName(),
-  password: faker.internet.password(10),
-  email: faker.internet.email(),
-}));
+const userCredentialsFactory = Factory.define<Partial<RegisterUserBody>>(
+  () => ({
+    name: faker.internet.userName(),
+    password: faker.internet.password(10),
+    email: faker.internet.email(),
+  })
+);
 
 export const getMockUser = (params?: Partial<UserStructure>) =>
   userFactory.build(params);
 
-export const getMockRegisterUser = (params?: Partial<RegisterUserBody>) =>
-  registerUserFactory.build(params);
+export const getMockUserCredentials = (params?: Partial<RegisterUserBody>) =>
+  userCredentialsFactory.build(params);
