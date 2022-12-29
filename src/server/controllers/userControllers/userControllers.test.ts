@@ -7,6 +7,7 @@ import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import type { LoginCredentials } from "./types.js";
 import { getMockUserCredentials } from "../../../factories/usersFactory.js";
+import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -28,9 +29,9 @@ const res: Partial<Response> = {
 const next = jest.fn();
 
 describe("Given a registerUser Controller", () => {
-  const registerUserBody = getMockUserCredentials();
+  const registerUserBody = getMockUserCredentials(luisUserMock);
 
-  describe("When it receives a request with a name, password and email, and the credentials are correct", () => {
+  describe("When it receives a request with name 'Luis', password: 'luisito123', email: 'luisito@isdicoders.com'", () => {
     test("Then it should call the response method status with a 201", async () => {
       const hashedPassword = "hashedpassword";
       const expectedStatus = createdCode;
@@ -61,7 +62,7 @@ describe("Given a registerUser Controller", () => {
     });
   });
 
-  describe("When it receives a request with a password and bcrypt rejects, and a next function", () => {
+  describe("When it receives a request with password 'luisito123' and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt 'Incorrect password'", async () => {
       const bcryptError = new Error();
 
@@ -84,11 +85,11 @@ describe("Given a registerUser Controller", () => {
 
 describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
-  const userCredentials = getMockUserCredentials();
+  const userCredentials = getMockUserCredentials(luisUserMock);
   const { email, password } = userCredentials;
   const loginCredentials: LoginCredentials = { email, password };
 
-  describe("When it receives a request with an email and password, and the user doesn't exist, and a next function", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
       req.body = loginCredentials;
 
@@ -106,7 +107,7 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with an email and password, and the password is incorrect, and a next function", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is incorrect, and a next function", () => {
     test("Then next should be invoked with message 'Incorrect password', status code 401 and public message 'Incorrect email or password'", async () => {
       req.body = loginCredentials;
 
@@ -125,7 +126,7 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with an email and password, and the password is correct and the user exists and is active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists and is active", () => {
     test("Then it should invoke the response's status method with 200 and json with a token", async () => {
       req.body = loginCredentials;
       const userId = "testid";
@@ -148,7 +149,7 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with an email and password, and the password is correct and the user exists but is inactive", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists but is inactive", () => {
     test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       req.body = loginCredentials;
       const userId = "testid";
@@ -172,7 +173,7 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with an email and password, and bcrypt rejects, and a next function", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt", async () => {
       const bcryptError = new Error();
 
