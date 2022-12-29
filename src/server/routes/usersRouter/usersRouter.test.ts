@@ -123,6 +123,8 @@ describe("Given a POST /users/register endpoint", () => {
 });
 
 describe("Given a POST /users/login endpoint", () => {
+  const wrongCredentialsError = { error: "Incorrect email or password" };
+
   const luisitoCredentials = getMockUser({
     email: "luisito@isdicoders.com",
     password: "luisito123",
@@ -183,19 +185,34 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
+  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito' and the user is registered and active", () => {
+    test("Then it should respond with status 200 and a token", async () => {
+      const { email } = luisitoCredentials;
+      const incorrectPassword = "luisito";
+
+      const response = await request(app)
+        .post(`${users}${login}`)
+        .send({ email, password: incorrectPassword })
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(wrongCredentialsError);
+    });
+  });
+
   describe("When it receives a request with email 'martita@isdicoders.com' and password 'martita123' and the user exists but is inactive", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       const { email, password } = martitaCredentials;
+      const inactiveUserError = {
+        error:
+          "User is inactive, contact your administrator if you think this is a mistake",
+      };
 
       const response = await request(app)
         .post(`${users}${login}`)
         .send({ email, password })
         .expect(unauthorizedCode);
 
-      expect(response.body).toStrictEqual({
-        error:
-          "User is inactive, contact your administrator if you think this is a mistake",
-      });
+      expect(response.body).toStrictEqual(inactiveUserError);
     });
   });
 });
