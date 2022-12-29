@@ -199,6 +199,20 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
+  describe("When it receives a request with incorrect email 'luisito123@isdicoders.com' and correct password 'luisito' and the user is registered and active", () => {
+    test("Then it should respond with status 200 and a token", async () => {
+      const { password } = luisitoCredentials;
+      const incorrectEmail = "luisito123@isdicoders.com";
+
+      const response = await request(app)
+        .post(`${users}${login}`)
+        .send({ email: incorrectEmail, password })
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(wrongCredentialsError);
+    });
+  });
+
   describe("When it receives a request with email 'martita@isdicoders.com' and password 'martita123' and the user exists but is inactive", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       const { email, password } = martitaCredentials;
