@@ -24,6 +24,18 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "Bearer Auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "unauthorizedError": {
+        "description": "Access token is missing or invalid"
+      }
     }
   },
   "paths": {
@@ -58,6 +70,33 @@
           },
           "409": {
             "description": "User already exists"
+          }
+        }
+      }
+    },
+    "/users/verify-token": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Verify user token",
+        "security": [
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Decode user token payload",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "63aca69eec0ef2f821d57f40",
+                  "name": "Luis"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
           }
         }
       }
