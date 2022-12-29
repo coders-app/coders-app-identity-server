@@ -4,6 +4,7 @@ const paths = {
   register: "/register",
   users: "/users",
   login: "/login",
+  verifyToken: "/verify-token",
 };
 
 export default paths;
