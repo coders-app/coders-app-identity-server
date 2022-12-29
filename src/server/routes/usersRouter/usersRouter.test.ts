@@ -16,7 +16,7 @@ const { users, register, login } = paths;
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { conflictCode, badRequestCode },
+  clientErrors: { conflictCode, badRequestCode, unauthorizedCode },
 } = httpStatusCodes;
 
 let server: MongoMemoryServer;
@@ -130,9 +130,19 @@ describe("Given a POST /users/login endpoint", () => {
   });
   let luisitoId: mongoose.Types.ObjectId;
 
+  const martitaCredentials = getMockUser({
+    email: "martita@isdicoders.com",
+    password: "martita123",
+  });
+
   beforeAll(async () => {
     const luisitoHashedPassword = await bcrypt.hash(
       luisitoCredentials.password,
+      10
+    );
+
+    const martitaHashedPassword = await bcrypt.hash(
+      martitaCredentials.password,
       10
     );
 
@@ -142,6 +152,11 @@ describe("Given a POST /users/login endpoint", () => {
     });
 
     luisitoId = luisito._id;
+
+    await User.create({
+      ...martitaCredentials,
+      password: martitaHashedPassword,
+    });
   });
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and correct password 'luisito123' and the user is registered and active", () => {
@@ -165,6 +180,22 @@ describe("Given a POST /users/login endpoint", () => {
       );
 
       expect(tokenPayload as CustomTokenPayload).toHaveProperty("name", name);
+    });
+  });
+
+  describe("When it receives a request with email 'martita@isdicoders.com' and password 'martita123' and the user exists but is inactive", () => {
+    test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
+      const { email, password } = martitaCredentials;
+
+      const response = await request(app)
+        .post(`${users}${login}`)
+        .send({ email, password })
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual({
+        error:
+          "User is inactive, contact your administrator if you think this is a mistake",
+      });
     });
   });
 });
