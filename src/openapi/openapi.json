@@ -23,6 +23,20 @@
             "example": "luis@email.com"
           }
         }
+      },
+      "User Credentials": {
+        "type": "object",
+        "required": ["password", "email"],
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "q65T!34mBC8h3#ul7K"
+          },
+          "email": {
+            "type": "string",
+            "example": "luis@email.com"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -74,6 +88,7 @@
         }
       }
     },
+<<<<<<< Updated upstream
     "/users/verify-token": {
       "get": {
         "tags": ["Auth"],
@@ -91,12 +106,39 @@
                 "example": {
                   "id": "63aca69eec0ef2f821d57f40",
                   "name": "Luis"
+=======
+    "/users/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User Credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User correctly logged",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "#"
+>>>>>>> Stashed changes
                 }
               }
             }
           },
           "401": {
+<<<<<<< Updated upstream
             "$ref": "#/components/responses/unauthorizedError"
+=======
+            "description": "unauthorized"
+>>>>>>> Stashed changes
           }
         }
       }
