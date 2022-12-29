@@ -176,10 +176,10 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito' and the user is registered and active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
       const { email } = luisitoCredentials;
-      const incorrectPassword = "luisito";
+      const incorrectPassword = "luisito1";
 
       const response = await request(app)
         .post(`${users}${login}`)
@@ -218,6 +218,26 @@ describe("Given a POST /users/login endpoint", () => {
         .expect(unauthorizedCode);
 
       expect(response.body).toStrictEqual(inactiveUserError);
+    });
+  });
+
+  describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
+    test("Then it should respond with status 400 and the errors 'Email must be a valid email' and 'Password should have 8 characters minimum'", async () => {
+      const expectedErrors = {
+        error: [
+          '"Email" must be a valid email',
+          "Password should have 8 characters minimum",
+        ].join("\n"),
+      };
+      const email = "luisito";
+      const password = "luisito";
+
+      const response = await request(app)
+        .post(`${users}${login}`)
+        .send({ email, password })
+        .expect(badRequestCode);
+
+      expect(response.body).toStrictEqual(expectedErrors);
     });
   });
 });
