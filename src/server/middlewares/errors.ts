@@ -11,7 +11,7 @@ const {
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
 
-const debug = debugCreator("identify-server:middlewares:errors");
+const debug = debugCreator("identity-server:middlewares:errors");
 
 const generalError = (
   error: CustomError,
@@ -26,9 +26,9 @@ const generalError = (
       .join("\n");
 
     error.publicMessage = validationErrors;
-  }
 
-  debug(chalk.red(error));
+    debug(chalk.blueBright(validationErrors));
+  }
 
   const statusCode = error.statusCode || internalServerErrorCode;
   const publicMessage =
