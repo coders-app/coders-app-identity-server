@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
-import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import type { LoginCredentials } from "./types.js";
+import { getMockUserCredentials } from "../../../factories/usersFactory.js";
+import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -28,13 +29,9 @@ const res: Partial<Response> = {
 const next = jest.fn();
 
 describe("Given a registerUser Controller", () => {
-  const registerUserBody: Partial<UserStructure> = {
-    name: "user",
-    password: "user123",
-    email: "user@gmail.com",
-  };
+  const registerUserBody = getMockUserCredentials(luisUserMock);
 
-  describe("When it receives a request with name 'user', password: 'user123', email: 'user@gmail.com'", () => {
+  describe("When it receives a request with name 'Luis', password: 'luisito123', email: 'luisito@isdicoders.com'", () => {
     test("Then it should call the response method status with a 201", async () => {
       const hashedPassword = "hashedpassword";
       const expectedStatus = createdCode;
@@ -65,7 +62,7 @@ describe("Given a registerUser Controller", () => {
     });
   });
 
-  describe("When it receives a request with password 'user123' and bcrypt rejects, and a next function", () => {
+  describe("When it receives a request with password 'luisito123' and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt 'Incorrect password'", async () => {
       const bcryptError = new Error();
 
@@ -88,14 +85,13 @@ describe("Given a registerUser Controller", () => {
 
 describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
-  const luisitoCredentials: LoginCredentials = {
-    email: "luisito@isdicoders.com",
-    password: "luisito",
-  };
+  const userCredentials = getMockUserCredentials(luisUserMock);
+  const { email, password } = userCredentials;
+  const loginCredentials: LoginCredentials = { email, password };
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
-      req.body = luisitoCredentials;
+      req.body = loginCredentials;
 
       User.findOne = jest.fn().mockResolvedValueOnce(null);
 
@@ -113,9 +109,9 @@ describe("Given a loginUser controller", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is incorrect, and a next function", () => {
     test("Then next should be invoked with message 'Incorrect password', status code 401 and public message 'Incorrect email or password'", async () => {
-      req.body = luisitoCredentials;
+      req.body = loginCredentials;
 
-      User.findOne = jest.fn().mockResolvedValueOnce(luisitoCredentials);
+      User.findOne = jest.fn().mockResolvedValueOnce(loginCredentials);
       bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
 
       const incorrectPasswordError = new CustomError(
@@ -132,12 +128,12 @@ describe("Given a loginUser controller", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists and is active", () => {
     test("Then it should invoke the response's status method with 200 and json with a token", async () => {
-      req.body = luisitoCredentials;
+      req.body = loginCredentials;
       const userId = "testid";
       const token = "testtoken";
 
       User.findOne = jest.fn().mockResolvedValueOnce({
-        ...luisitoCredentials,
+        ...loginCredentials,
         _id: userId,
         isActive: true,
       });
@@ -155,7 +151,7 @@ describe("Given a loginUser controller", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists but is inactive", () => {
     test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
-      req.body = luisitoCredentials;
+      req.body = loginCredentials;
       const userId = "testid";
       const inactiveUserError = new CustomError(
         "User is inactive",
@@ -164,7 +160,7 @@ describe("Given a loginUser controller", () => {
       );
 
       User.findOne = jest.fn().mockResolvedValueOnce({
-        ...luisitoCredentials,
+        ...loginCredentials,
         _id: userId,
         isActive: false,
       });
@@ -181,9 +177,9 @@ describe("Given a loginUser controller", () => {
     test("Then it should invoke next with the error thrown by bcrypt", async () => {
       const bcryptError = new Error();
 
-      req.body = luisitoCredentials;
+      req.body = loginCredentials;
 
-      User.findOne = jest.fn().mockResolvedValueOnce(luisitoCredentials);
+      User.findOne = jest.fn().mockResolvedValueOnce(loginCredentials);
       bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
 
       await loginUser(req as Request, null, next);
