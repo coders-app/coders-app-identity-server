@@ -51,7 +51,9 @@ const userAuthentication = (
       );
     }
 
-    res.status(okCode).json({ userPayload: verifyToken });
+    const { name, id } = verifyToken;
+
+    res.status(okCode).json({ userPayload: { name, id } });
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,

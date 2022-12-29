@@ -15,6 +15,7 @@ const saltLength = 10;
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { conflictCode, unauthorizedCode },
+  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 export const registerUser = async (
@@ -35,11 +36,22 @@ export const registerUser = async (
 
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
   } catch (error: unknown) {
+    if ((error as Error).message.includes("duplicate key")) {
+      const customErrorDuplicateKey = new CustomError(
+        (error as Error).message,
+        conflictCode,
+        "User already exists"
+      );
+      next(customErrorDuplicateKey);
+      return;
+    }
+
     const customError = new CustomError(
       (error as Error).message,
-      conflictCode,
+      internalServerErrorCode,
       "Error creating a new user"
     );
+
     next(customError);
   }
 };
