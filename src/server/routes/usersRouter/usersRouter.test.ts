@@ -185,10 +185,10 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito' and the user is registered and active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
       const { email } = luisitoCredentials;
-      const incorrectPassword = "luisito";
+      const incorrectPassword = "luisito1";
 
       const response = await request(app)
         .post(`${users}${login}`)
