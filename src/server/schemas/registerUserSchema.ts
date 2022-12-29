@@ -8,6 +8,23 @@ export interface RegisterUserBody extends UserStructure {
 
 const { emailInvalid, stringEmpty, stringMin } = joiTypesError;
 
+export const emailSchema = Joi.string()
+  .required()
+  .email()
+  .messages({
+    [stringEmpty]: "Email shouldn't be empty",
+    [emailInvalid]: "Incorrect email format",
+  })
+  .label("Email");
+
+export const passwordSchema = Joi.string()
+  .min(8)
+  .required()
+  .messages({
+    [stringMin]: "Password should have 8 characters minimum",
+    [stringEmpty]: "Password shouldn't be empty",
+  });
+
 const registerUserSchema = {
   body: Joi.object<RegisterUserBody>({
     name: Joi.string()
@@ -15,21 +32,8 @@ const registerUserSchema = {
       .messages({
         [stringEmpty]: "Name shouldn't be empty",
       }),
-    password: Joi.string()
-      .min(8)
-      .required()
-      .messages({
-        [stringMin]: "Password should have 8 characters minimum",
-        [stringEmpty]: "Password shouldn't be empty",
-      }),
-    email: Joi.string()
-      .required()
-      .email()
-      .messages({
-        [stringEmpty]: "Email shouldn't be empty",
-        [emailInvalid]: "Incorrect email format",
-      })
-      .label("Email"),
+    password: passwordSchema,
+    email: emailSchema,
   }),
 };
 
