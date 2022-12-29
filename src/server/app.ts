@@ -41,6 +41,4 @@ app.use(users, verifyTokenRouter);
 app.use(unknownEndpoint);
 app.use(generalError);
 
-app.use(generalError);
-
 export default app;
