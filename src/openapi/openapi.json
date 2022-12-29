@@ -88,25 +88,6 @@
         }
       }
     },
-<<<<<<< Updated upstream
-    "/users/verify-token": {
-      "get": {
-        "tags": ["Auth"],
-        "summary": "Verify user token",
-        "security": [
-          {
-            "Bearer Auth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Decode user token payload",
-            "content": {
-              "application/json": {
-                "example": {
-                  "id": "63aca69eec0ef2f821d57f40",
-                  "name": "Luis"
-=======
     "/users/login": {
       "post": {
         "tags": ["User"],
@@ -128,17 +109,39 @@
               "application/json": {
                 "example": {
                   "token": "#"
->>>>>>> Stashed changes
                 }
               }
             }
           },
           "401": {
-<<<<<<< Updated upstream
             "$ref": "#/components/responses/unauthorizedError"
-=======
-            "description": "unauthorized"
->>>>>>> Stashed changes
+          }
+        }
+      }
+    },
+    "/users/verify-token": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Verify user token",
+        "security": [
+          {
+            "Bearer Auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Decode user token payload",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "63aca69eec0ef2f821d57f40",
+                  "name": "Luis"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
           }
         }
       }
