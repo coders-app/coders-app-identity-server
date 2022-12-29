@@ -47,12 +47,17 @@
             "content": {
               "application/json": {
                 "example": {
-                  "id": "63aa9f15058e3f351c5473fa",
-                  "name": "Luis",
-                  "email": "luis@email.com"
+                  "user": {
+                    "id": "63aca69eec0ef2f821d57f40",
+                    "name": "Luis",
+                    "email": "luis@email.com"
+                  }
                 }
               }
             }
+          },
+          "409": {
+            "description": "User already exists"
           }
         }
       }
