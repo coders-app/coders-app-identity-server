@@ -10,7 +10,8 @@ import type { LoginCredentials } from "./types.js";
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { unauthorizedCode },
+  clientErrors: { unauthorizedCode, conflictCode },
+  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 beforeEach(() => {
@@ -27,19 +28,20 @@ const res: Partial<Response> = {
 const next = jest.fn();
 
 describe("Given a registerUser Controller", () => {
+  const registerUserBody: Partial<UserStructure> = {
+    name: "user",
+    password: "user123",
+    email: "user@gmail.com",
+  };
+
   describe("When it receives a request with name 'user', password: 'user123', email: 'user@gmail.com'", () => {
     test("Then it should call the response method status with a 201", async () => {
-      const registerBody: Partial<UserStructure> = {
-        name: "user",
-        password: "user123",
-        email: "user@gmail.com",
-      };
-      req.body = registerBody;
       const hashedPassword = "hashedpassword";
       const expectedStatus = createdCode;
 
-      bcrypt.hash = jest.fn().mockResolvedValue(hashedPassword);
+      req.body = registerUserBody;
 
+      bcrypt.hash = jest.fn().mockResolvedValue(hashedPassword);
       User.create = jest.fn();
 
       await registerUser(req as Request, res as Response, next as NextFunction);
@@ -48,14 +50,38 @@ describe("Given a registerUser Controller", () => {
     });
   });
 
-  describe("When it receives a request and there is an error", () => {
-    test("Then it should call next with a custom Error", async () => {
-      const error = new Error("");
+  describe("When it receives a request with a user name already exist", () => {
+    test("Then it should call next with an error message 'User already exists'", async () => {
+      const customErrorDuplicateKey = new CustomError(
+        "Duplicate key",
+        conflictCode,
+        "User already exists"
+      );
 
-      User.create = jest.fn().mockRejectedValue(error);
+      User.create = jest.fn().mockRejectedValue(customErrorDuplicateKey);
       await registerUser(req as Request, res as Response, next as NextFunction);
 
-      expect(next).toHaveBeenCalledWith(error);
+      expect(next).toHaveBeenCalledWith(customErrorDuplicateKey);
+    });
+  });
+
+  describe("When it receives a request with password 'user123' and bcrypt rejects, and a next function", () => {
+    test("Then it should invoke next with the error thrown by bcrypt 'Incorrect password'", async () => {
+      const bcryptError = new Error();
+
+      req.body = registerUserBody;
+
+      bcrypt.hash = jest.fn().mockRejectedValueOnce(bcryptError);
+      User.findOne = jest.fn().mockResolvedValueOnce(registerUserBody);
+
+      await loginUser(req as Request, null, next);
+      const customErrorBcrypt = new CustomError(
+        "Incorrect password",
+        internalServerErrorCode,
+        "Error creating a new user"
+      );
+
+      expect(next).toHaveBeenCalledWith(customErrorBcrypt);
     });
   });
 });
@@ -153,7 +179,7 @@ describe("Given a loginUser controller", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt", async () => {
-      const bcryptError = new Error("Bcrypt error");
+      const bcryptError = new Error();
 
       req.body = luisitoCredentials;
 
@@ -161,13 +187,8 @@ describe("Given a loginUser controller", () => {
       bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
 
       await loginUser(req as Request, null, next);
-      const customErrorBcrypt = new CustomError(
-        "Bcrypt error",
-        409,
-        "Error creating a new user"
-      );
 
-      expect(next).toHaveBeenCalledWith(customErrorBcrypt);
+      expect(next).toHaveBeenCalledWith(bcryptError);
     });
   });
 });

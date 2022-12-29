@@ -15,6 +15,7 @@ const saltLength = 10;
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { conflictCode, unauthorizedCode },
+  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 export const registerUser = async (
@@ -47,7 +48,7 @@ export const registerUser = async (
 
     const customError = new CustomError(
       (error as Error).message,
-      conflictCode,
+      internalServerErrorCode,
       "Error creating a new user"
     );
 
