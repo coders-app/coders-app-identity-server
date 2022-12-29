@@ -23,6 +23,20 @@
             "example": "luis@email.com"
           }
         }
+      },
+      "User Credentials": {
+        "type": "object",
+        "required": ["password", "email"],
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "q65T!34mBC8h3#ul7K"
+          },
+          "email": {
+            "type": "string",
+            "example": "luis@email.com"
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -70,6 +84,37 @@
           },
           "409": {
             "description": "User already exists"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User Credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User correctly logged",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "#"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorizedError"
           }
         }
       }

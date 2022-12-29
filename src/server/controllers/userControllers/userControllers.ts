@@ -91,7 +91,7 @@ export const loginUser = async (
     if (!user.isActive) {
       throw new CustomError(
         "User is inactive",
-        401,
+        unauthorizedCode,
         "User is inactive, contact your administrator if you think this is a mistake"
       );
     }
