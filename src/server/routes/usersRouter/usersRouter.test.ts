@@ -229,4 +229,24 @@ describe("Given a POST /users/login endpoint", () => {
       expect(response.body).toStrictEqual(inactiveUserError);
     });
   });
+
+  describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
+    test("Then it should respond with status 400 and the errors 'Email must be a valid email' and 'Password should have 8 characters minimum'", async () => {
+      const expectedErrors = {
+        error: [
+          '"Email" must be a valid email',
+          "Password should have 8 characters minimum",
+        ].join("\n"),
+      };
+      const email = "luisito";
+      const password = "luisito";
+
+      const response = await request(app)
+        .post(`${users}${login}`)
+        .send({ email, password })
+        .expect(badRequestCode);
+
+      expect(response.body).toStrictEqual(expectedErrors);
+    });
+  });
 });
