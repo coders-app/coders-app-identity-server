@@ -8,6 +8,7 @@ const userFactory = Factory.define<UserStructure>(() => ({
   email: faker.internet.email(),
   password: faker.internet.password(10),
   isActive: false,
+  isAdmin: faker.datatype.boolean(),
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
 }));
