@@ -11,3 +11,7 @@ export interface UserStructure extends UserData {
   isAdmin: boolean;
   isActive: boolean;
 }
+
+export interface UserWithId extends UserStructure {
+  _id: string;
+}
