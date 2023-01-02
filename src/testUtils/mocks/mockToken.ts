@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 import { environment } from "../../loadEnvironments.js";
 import type { CustomTokenPayload } from "../../server/controllers/userControllers/types";
 
-const { jwtSecret } = environment;
+const {
+  jwt: { jwtSecret },
+} = environment;
 
 export const mockTokenPayload: CustomTokenPayload = {
   name: "admin",

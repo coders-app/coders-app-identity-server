@@ -21,3 +21,4 @@ jobs:
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           DEBUG: ${{ secrets.DEBUG }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TOKEN_EXPIRY: ${{ secrets.TOKEN_EXPIRY}}

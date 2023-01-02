@@ -18,10 +18,12 @@ export const environment = {
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
   originWhitelist: originWhitelist.split(","),
-  jwtSecret,
+  jwt: {
+    jwtSecret,
+    tokenExpiry,
+  },
   basicAuth: {
     username: basicAuthUsername,
     password: basicAuthPassword,
   },
-  tokenExpiry,
 };

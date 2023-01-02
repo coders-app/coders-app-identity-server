@@ -8,7 +8,9 @@ import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserStructure } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
 
-const { jwtSecret, tokenExpiry } = environment;
+const {
+  jwt: { jwtSecret, tokenExpiry },
+} = environment;
 
 const saltLength = 10;
 
