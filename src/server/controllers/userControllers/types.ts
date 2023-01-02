@@ -1,7 +1,5 @@
-import type { UserStructure } from "../../../database/models/User";
 import type { JwtPayload } from "jsonwebtoken";
-
-export type LoginCredentials = Pick<UserStructure, "email" | "password">;
+import type { UserStructure } from "../../../types/types";
 
 export interface CustomTokenPayload
   extends Pick<UserStructure, "name" | "isAdmin">,

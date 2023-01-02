@@ -5,9 +5,9 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
-import type { LoginCredentials } from "./types.js";
 import { getMockUserCredentials } from "../../../factories/usersFactory.js";
 import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
+import type { UserCredentials } from "../../../types/types.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -87,7 +87,7 @@ describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
   const userCredentials = getMockUserCredentials(luisUserMock);
   const { email, password } = userCredentials;
-  const loginCredentials: LoginCredentials = { email, password };
+  const loginCredentials: UserCredentials = { email, password };
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
