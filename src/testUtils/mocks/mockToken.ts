@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { environment } from "../../loadEnvironments.js";
 import type { CustomTokenPayload } from "../../server/controllers/userControllers/types";
 
@@ -7,9 +8,9 @@ const { jwtSecret } = environment;
 export const mockTokenPayload: CustomTokenPayload = {
   name: "admin",
   isAdmin: false,
-  id: "637ca68b2e7c24060c5c7e20",
+  id: new mongoose.Types.ObjectId().toString(),
 };
 
-const token = jwt.sign(mockTokenPayload, jwtSecret);
+export const mockToken = jwt.sign(mockTokenPayload, jwtSecret);
 
-export const mockToken = `Bearer ${token}`;
+export const mockAuthorizationHeader = `Bearer ${mockToken}`;

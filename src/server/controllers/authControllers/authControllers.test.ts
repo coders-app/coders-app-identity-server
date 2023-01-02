@@ -2,7 +2,7 @@ import type { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError";
 import {
-  mockToken,
+  mockAuthorizationHeader,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
@@ -82,7 +82,7 @@ describe("Given the auth controller", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockToken);
+      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
 
       userAuthentication(req as Request, res as Response, next);
 
@@ -94,7 +94,7 @@ describe("Given the auth controller", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockToken);
+      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
 
       userAuthentication(req as Request, res as Response, next);
 

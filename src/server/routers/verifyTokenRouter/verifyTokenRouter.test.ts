@@ -3,7 +3,7 @@ import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import {
-  mockToken,
+  mockAuthorizationHeader,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
@@ -40,7 +40,7 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(`${users}${verifyToken}`)
-        .set("Authorization", mockToken)
+        .set("Authorization", mockAuthorizationHeader)
         .send(mockTokenPayload)
         .expect(expectedStatus);
 
