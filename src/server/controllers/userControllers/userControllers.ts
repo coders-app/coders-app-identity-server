@@ -11,6 +11,7 @@ import type { CustomTokenPayload } from "./types.js";
 const { jwtSecret } = environment;
 
 const saltLength = 10;
+const tokenExpiry = "2d";
 
 const {
   successCodes: { createdCode, okCode },
@@ -102,7 +103,7 @@ export const loginUser = async (
       id: user._id.toString(),
     };
 
-    const token = jwt.sign(tokenPayload, jwtSecret);
+    const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: tokenExpiry });
 
     res.status(okCode).json({ token });
   } catch (error: unknown) {
