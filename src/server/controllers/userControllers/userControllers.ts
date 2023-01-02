@@ -8,10 +8,9 @@ import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserStructure } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
 
-const { jwtSecret } = environment;
+const { jwtSecret, tokenExpiry } = environment;
 
 const saltLength = 10;
-const tokenExpiry = "2d";
 
 const {
   successCodes: { createdCode, okCode },

@@ -10,6 +10,7 @@ const {
   JWT_SECRET: jwtSecret,
   BASIC_AUTH_USERNAME: basicAuthUsername,
   BASIC_AUTH_PASSWORD: basicAuthPassword,
+  TOKEN_EXPIRY: tokenExpiry,
 } = process.env;
 
 export const environment = {
@@ -22,4 +23,5 @@ export const environment = {
     username: basicAuthUsername,
     password: basicAuthPassword,
   },
+  tokenExpiry,
 };
