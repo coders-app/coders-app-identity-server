@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import type { UserStructure } from "../../../database/models/User";
 import User from "../../../database/models/User";
 import {
   getMockUser,
@@ -18,6 +17,7 @@ import {
   luisUserMock,
   martaUserMock,
 } from "../../../testUtils/mocks/mockUsers";
+import type { UserData, UserStructure } from "../../../types/types";
 
 const { users, register, login } = paths;
 
@@ -82,7 +82,7 @@ describe("Given a POST /users/register endpoint", () => {
 
   describe("When it receives a request with name, email, password empty", () => {
     test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Password shouldn't be empty, Email shouldn't be empty'", async () => {
-      const emptyUser: Partial<UserStructure> = {
+      const emptyUser: UserData = {
         name: "",
         email: "",
         password: "",

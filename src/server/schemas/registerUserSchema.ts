@@ -1,16 +1,12 @@
 import { Joi } from "express-validation";
-import type { UserStructure } from "../../database/models/User";
+import type { UserData } from "../../types/types.js";
 import joiTypesError from "./joiTypesErrors.js";
 import { emailSchema, passwordSchema } from "./userCredentialSchemas.js";
-
-export interface RegisterUserBody extends UserStructure {
-  repeatedPassword: string;
-}
 
 const { stringEmpty } = joiTypesError;
 
 const registerUserSchema = {
-  body: Joi.object<RegisterUserBody>({
+  body: Joi.object<UserData>({
     name: Joi.string()
       .required()
       .messages({
