@@ -2,11 +2,11 @@ import bcrypt from "bcryptjs";
 import type { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
-import type { UserStructure } from "../../../database/models/User.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import type { CustomTokenPayload, LoginCredentials } from "./types.js";
 import { environment } from "../../../loadEnvironments.js";
+import type { UserCredentials, UserStructure } from "../../../types/types.js";
+import type { CustomTokenPayload } from "./types.js";
 
 const { jwtSecret } = environment;
 
@@ -60,7 +60,7 @@ export const loginUser = async (
   req: Request<
     Record<string, unknown>,
     Record<string, unknown>,
-    LoginCredentials
+    UserCredentials
   >,
   res: Response,
   next: NextFunction
