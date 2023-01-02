@@ -5,9 +5,9 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
-import { getMockUserCredentials } from "../../../factories/usersFactory.js";
 import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
 import type { UserCredentials } from "../../../types/types.js";
+import { getMockUserData } from "../../../factories/userDataFactory.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -29,7 +29,7 @@ const res: Partial<Response> = {
 const next = jest.fn();
 
 describe("Given a registerUser Controller", () => {
-  const registerUserBody = getMockUserCredentials(luisUserMock);
+  const registerUserBody = getMockUserData(luisUserMock);
 
   describe("When it receives a request with name 'Luis', password: 'luisito123', email: 'luisito@isdicoders.com'", () => {
     test("Then it should call the response method status with a 201", async () => {
@@ -85,7 +85,7 @@ describe("Given a registerUser Controller", () => {
 
 describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
-  const userCredentials = getMockUserCredentials(luisUserMock);
+  const userCredentials = getMockUserData(luisUserMock);
   const { email, password } = userCredentials;
   const loginCredentials: UserCredentials = { email, password };
 
