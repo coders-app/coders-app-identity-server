@@ -6,6 +6,7 @@ const { jwtSecret } = environment;
 
 export const mockTokenPayload: CustomTokenPayload = {
   name: "admin",
+  isAdmin: false,
   id: "637ca68b2e7c24060c5c7e20",
 };
 

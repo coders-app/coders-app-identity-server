@@ -98,6 +98,7 @@ export const loginUser = async (
 
     const tokenPayload: CustomTokenPayload = {
       name: user.name,
+      isAdmin: user.isAdmin,
       id: user._id.toString(),
     };
 
