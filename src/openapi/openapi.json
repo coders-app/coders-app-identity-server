@@ -48,7 +48,7 @@
     },
     "responses": {
       "unauthorizedError": {
-        "description": "Access token is missing or invalid"
+        "description": "Access token is missing or invalid."
       }
     }
   },
@@ -83,7 +83,7 @@
             }
           },
           "409": {
-            "description": "User already exists"
+            "description": "User already exists."
           }
         }
       }
@@ -128,14 +128,30 @@
             "Bearer Auth": []
           }
         ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "A valid JWT token must be passed in the 'Authorization' header.",
+            "schema": {
+              "type": "string",
+              "example": {
+                "Authorization": "Bearer xx.yy.zz"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Decode user token payload",
+            "description": "User token payload decoded.",
             "content": {
               "application/json": {
                 "example": {
-                  "id": "63aca69eec0ef2f821d57f40",
-                  "name": "Luis"
+                  "userPayload": {
+                    "name": "Luis",
+                    "id": "63aca69eec0ef2f821d57f40"
+                  }
                 }
               }
             }
