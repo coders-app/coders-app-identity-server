@@ -1,7 +1,6 @@
 import { Factory } from "fishery";
-import type { UserStructure } from "../database/models/User";
 import { faker } from "@faker-js/faker";
-import type { RegisterUserBody } from "../server/schemas/registerUserSchema";
+import type { UserData, UserStructure } from "../types/types";
 
 const userFactory = Factory.define<UserStructure>(() => ({
   name: faker.internet.userName(),
@@ -9,20 +8,16 @@ const userFactory = Factory.define<UserStructure>(() => ({
   password: faker.internet.password(10),
   isActive: false,
   isAdmin: faker.datatype.boolean(),
-  createdAt: faker.date.past(),
-  updatedAt: faker.date.recent(),
 }));
 
-const userCredentialsFactory = Factory.define<Partial<RegisterUserBody>>(
-  () => ({
-    name: faker.internet.userName(),
-    password: faker.internet.password(10),
-    email: faker.internet.email(),
-  })
-);
+const userCredentialsFactory = Factory.define<Partial<UserData>>(() => ({
+  name: faker.internet.userName(),
+  password: faker.internet.password(10),
+  email: faker.internet.email(),
+}));
 
 export const getMockUser = (params?: Partial<UserStructure>) =>
   userFactory.build(params);
 
-export const getMockUserCredentials = (params?: Partial<RegisterUserBody>) =>
+export const getMockUserCredentials = (params?: Partial<UserData>) =>
   userCredentialsFactory.build(params);
