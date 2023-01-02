@@ -8,7 +8,7 @@ import CustomError from "../../../CustomError/CustomError.js";
 import { getMockUserCredentials } from "../../../factories/usersFactory.js";
 import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
 import type { UserCredentials } from "../../../types/types.js";
-import { mockToken } from "../../../testUtils/mocks/mockToken.js";
+import { getMockToken } from "../../../testUtils/mocks/mockToken.js";
 import mongoose from "mongoose";
 
 const {
@@ -90,6 +90,7 @@ describe("Given a loginUser controller", () => {
   const userCredentials = getMockUserCredentials(luisUserMock);
   const { email, password } = userCredentials;
   const loginCredentials: UserCredentials = { email, password };
+  const mockToken = getMockToken();
   const userId = new mongoose.Types.ObjectId().toString();
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
