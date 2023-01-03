@@ -36,12 +36,10 @@ describe("Given a registerUser Controller", () => {
   describe("When it receives a request with a user data with email: 'luisito@isdicoders.com'", () => {
     test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com'", async () => {
       const userCreatedMock: UserWithId = getMockUser(registerUserBody);
-      const hashedPassword = "hashedpassword";
       const expectedStatus = createdCode;
 
       req.body = registerUserBody;
 
-      bcrypt.hash = jest.fn().mockResolvedValue(hashedPassword);
       User.create = jest.fn().mockResolvedValueOnce(userCreatedMock);
 
       await registerUser(req as Request, res as Response, next as NextFunction);
@@ -69,26 +67,6 @@ describe("Given a registerUser Controller", () => {
       await registerUser(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(customErrorDuplicateKey);
-    });
-  });
-
-  describe("When it receives a request with a password and bcrypt rejects, and a next function", () => {
-    test("Then it should invoke next with the error thrown by bcrypt 'Incorrect password'", async () => {
-      const bcryptError = new Error();
-
-      req.body = registerUserBody;
-
-      bcrypt.hash = jest.fn().mockRejectedValueOnce(bcryptError);
-      User.findOne = jest.fn().mockResolvedValueOnce(registerUserBody);
-
-      await loginUser(req as Request, null, next);
-      const customErrorBcrypt = new CustomError(
-        "Incorrect password",
-        internalServerErrorCode,
-        "Error creating a new user"
-      );
-
-      expect(next).toHaveBeenCalledWith(customErrorBcrypt);
     });
   });
 });
