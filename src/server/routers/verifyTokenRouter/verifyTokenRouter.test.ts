@@ -3,7 +3,7 @@ import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import {
-  mockToken,
+  getMockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
@@ -17,6 +17,8 @@ const {
 
 describe("Given a GET /verify-token endpoint", () => {
   const expectedMessage = "Unauthorized";
+  const mockToken = getMockToken();
+  const mockAuthorizationHeader = `Bearer ${mockToken}`;
 
   describe("When it receives a request with no auth header", () => {
     test("Then it should respond with status 401 and 'Unauthorized' error message ", async () => {
@@ -40,7 +42,7 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(`${users}${verifyToken}`)
-        .set("Authorization", mockToken)
+        .set("Authorization", mockAuthorizationHeader)
         .send(mockTokenPayload)
         .expect(expectedStatus);
 

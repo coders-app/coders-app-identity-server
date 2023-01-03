@@ -8,7 +8,9 @@ import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
 
-const { jwtSecret } = environment;
+const {
+  jwt: { jwtSecret, tokenExpiry },
+} = environment;
 
 const {
   successCodes: { createdCode, okCode },
@@ -97,7 +99,7 @@ export const loginUser = async (
       id: user._id.toString(),
     };
 
-    const token = jwt.sign(tokenPayload, jwtSecret);
+    const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: tokenExpiry });
 
     res.status(okCode).json({ token });
   } catch (error: unknown) {
