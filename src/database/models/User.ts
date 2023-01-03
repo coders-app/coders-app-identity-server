@@ -5,20 +5,20 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     password: {
       type: String,
       required: true,
+      minlength: 8,
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-    },
-    isAdmin: {
-      type: Boolean,
-      default: false,
     },
     isActive: {
       type: Boolean,

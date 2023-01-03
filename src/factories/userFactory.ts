@@ -1,0 +1,16 @@
+import { Factory } from "fishery";
+import { faker } from "@faker-js/faker";
+import mongoose from "mongoose";
+import type { UserWithId } from "../types/types";
+
+const userFactory = Factory.define<UserWithId>(() => ({
+  name: faker.name.fullName(),
+  email: faker.internet.email(),
+  password: faker.internet.password(10),
+  isActive: false,
+  isAdmin: false,
+  _id: new mongoose.Types.ObjectId().toString(),
+}));
+
+export const getMockUser = (params?: Partial<UserWithId>) =>
+  userFactory.build(params);

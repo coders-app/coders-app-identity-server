@@ -5,9 +5,11 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
-import { getMockUserCredentials } from "../../../factories/usersFactory.js";
-import { luisUserMock } from "../../../testUtils/mocks/mockUsers.js";
-import type { UserCredentials } from "../../../types/types.js";
+import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
+import type { UserWithId } from "../../../types/types.js";
+import { getMockUserData } from "../../../factories/userDataFactory.js";
+import { getMockUser } from "../../../factories/userFactory.js";
+import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -29,25 +31,33 @@ const res: Partial<Response> = {
 const next = jest.fn();
 
 describe("Given a registerUser Controller", () => {
-  const registerUserBody = getMockUserCredentials(luisUserMock);
+  const registerUserBody = getMockUserData({ email: luisEmail });
 
-  describe("When it receives a request with name 'Luis', password: 'luisito123', email: 'luisito@isdicoders.com'", () => {
-    test("Then it should call the response method status with a 201", async () => {
+  describe("When it receives a request with a user data with email: 'luisito@isdicoders.com'", () => {
+    test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com'", async () => {
+      const userCreatedMock: UserWithId = getMockUser(registerUserBody);
       const hashedPassword = "hashedpassword";
       const expectedStatus = createdCode;
 
       req.body = registerUserBody;
 
       bcrypt.hash = jest.fn().mockResolvedValue(hashedPassword);
-      User.create = jest.fn();
+      User.create = jest.fn().mockResolvedValueOnce(userCreatedMock);
 
       await registerUser(req as Request, res as Response, next as NextFunction);
 
       expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith({
+        user: {
+          id: userCreatedMock._id,
+          name: userCreatedMock.name,
+          email: userCreatedMock.email,
+        },
+      });
     });
   });
 
-  describe("When it receives a request with a user name already exist", () => {
+  describe("When it receives a request with a user name that already exist", () => {
     test("Then it should call next with an error message 'User already exists'", async () => {
       const customErrorDuplicateKey = new CustomError(
         "Duplicate key",
@@ -62,7 +72,7 @@ describe("Given a registerUser Controller", () => {
     });
   });
 
-  describe("When it receives a request with password 'luisito123' and bcrypt rejects, and a next function", () => {
+  describe("When it receives a request with a password and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt 'Incorrect password'", async () => {
       const bcryptError = new Error();
 
@@ -85,13 +95,11 @@ describe("Given a registerUser Controller", () => {
 
 describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
-  const userCredentials = getMockUserCredentials(luisUserMock);
-  const { email, password } = userCredentials;
-  const loginCredentials: UserCredentials = { email, password };
+  const userCredentials = getMockUserCredentials({ email: luisEmail });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the user doesn't exist, and a next function", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
-      req.body = loginCredentials;
+      req.body = userCredentials;
 
       User.findOne = jest.fn().mockResolvedValueOnce(null);
 
@@ -109,9 +117,14 @@ describe("Given a loginUser controller", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is incorrect, and a next function", () => {
     test("Then next should be invoked with message 'Incorrect password', status code 401 and public message 'Incorrect email or password'", async () => {
-      req.body = loginCredentials;
+      const incorrectPassword = "luisito";
+      const incorrectUserCredentials = {
+        ...userCredentials,
+        password: incorrectPassword,
+      };
+      req.body = incorrectUserCredentials;
 
-      User.findOne = jest.fn().mockResolvedValueOnce(loginCredentials);
+      User.findOne = jest.fn().mockResolvedValueOnce(incorrectUserCredentials);
       bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
 
       const incorrectPasswordError = new CustomError(
@@ -126,17 +139,13 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists and is active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user exists and is active", () => {
     test("Then it should invoke the response's status method with 200 and json with a token", async () => {
-      req.body = loginCredentials;
-      const userId = "testid";
+      req.body = userCredentials;
       const token = "testtoken";
+      const existingUser = getMockUser({ ...userCredentials, isActive: true });
 
-      User.findOne = jest.fn().mockResolvedValueOnce({
-        ...loginCredentials,
-        _id: userId,
-        isActive: true,
-      });
+      User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
       bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
 
@@ -149,21 +158,17 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and the password is correct and the user exists but is inactive", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the password is correct and the user exists but is inactive", () => {
     test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
-      req.body = loginCredentials;
-      const userId = "testid";
+      req.body = userCredentials;
+      const existingUser = getMockUser(userCredentials);
       const inactiveUserError = new CustomError(
         "User is inactive",
         unauthorizedCode,
         "User is inactive, contact your administrator if you think this is a mistake"
       );
 
-      User.findOne = jest.fn().mockResolvedValueOnce({
-        ...loginCredentials,
-        _id: userId,
-        isActive: false,
-      });
+      User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
       bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
 
@@ -173,13 +178,13 @@ describe("Given a loginUser controller", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password 'luisito' and bcrypt rejects, and a next function", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com', a password and bcrypt rejects, and a next function", () => {
     test("Then it should invoke next with the error thrown by bcrypt", async () => {
       const bcryptError = new Error();
 
-      req.body = loginCredentials;
+      req.body = userCredentials;
 
-      User.findOne = jest.fn().mockResolvedValueOnce(loginCredentials);
+      User.findOne = jest.fn().mockResolvedValueOnce(userCredentials);
       bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
 
       await loginUser(req as Request, null, next);

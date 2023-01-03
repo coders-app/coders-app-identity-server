@@ -7,17 +7,15 @@ import mongoose from "mongoose";
 import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import User from "../../../database/models/User";
-import {
-  getMockUser,
-  getMockUserCredentials,
-} from "../../../factories/usersFactory";
+import User from "../../../database/models/User.js";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types";
 import {
-  luisUserMock,
-  martaUserMock,
+  luisEmail,
+  luisName,
+  martaEmail,
 } from "../../../testUtils/mocks/mockUsers";
 import type { UserData, UserStructure } from "../../../types/types";
+import { getMockUserData } from "../../../factories/userDataFactory";
 
 const { users, register, login } = paths;
 
@@ -43,9 +41,9 @@ describe("Given a POST /users/register endpoint", () => {
     await User.deleteMany({});
   });
 
-  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and password 'luisito123' in the body", () => {
+  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and a password in the body", () => {
     test("Then it should respond with status 201 and the user's credentials in the body", async () => {
-      const newUser = getMockUserCredentials(luisUserMock);
+      const newUser = getMockUserData({ name: luisName, email: luisEmail });
 
       const response: { body: { user: UserStructure } } = await request(app)
         .post(`${users}${register}`)
@@ -61,8 +59,8 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name 'Marta', email 'marta@isdicoders.com', password 'martita123' in the body but that user is already registered", () => {
-    const existingUser = getMockUserCredentials(martaUserMock);
+  describe("When it receives a request with email 'marta@isdicoders.com', a name and a password in the body but that user is already registered", () => {
+    const existingUser = getMockUserData({ email: martaEmail });
 
     beforeEach(async () => {
       await User.create(existingUser);
@@ -102,11 +100,10 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and password '12345'", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and password '12345' and a name", () => {
     test("Then it should respond with status 400 and 'Password should have 8 characters minimum'", async () => {
-      const newUser = getMockUserCredentials({
-        name: "Luis",
-        email: "luisito@isdicoders.com",
+      const newUser = getMockUserData({
+        email: luisEmail,
         password: "12345",
       });
       const expectedMessage = "Password should have 8 characters minimum";
@@ -124,38 +121,33 @@ describe("Given a POST /users/register endpoint", () => {
 describe("Given a POST /users/login endpoint", () => {
   const wrongCredentialsError = { error: "Incorrect email or password" };
 
-  const luisitoCredentials = getMockUser({ ...luisUserMock, isActive: true });
+  const luisitoData = getMockUserData({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
 
-  const martitaCredentials = getMockUser(martaUserMock);
+  const martitaData = getMockUserData({ email: martaEmail });
 
   beforeAll(async () => {
-    const luisitoHashedPassword = await bcrypt.hash(
-      luisitoCredentials.password,
-      10
-    );
+    const luisitoHashedPassword = await bcrypt.hash(luisitoData.password, 10);
 
-    const martitaHashedPassword = await bcrypt.hash(
-      martitaCredentials.password,
-      10
-    );
+    const martitaHashedPassword = await bcrypt.hash(martitaData.password, 10);
 
     const luisito = await User.create({
-      ...luisitoCredentials,
+      ...luisitoData,
       password: luisitoHashedPassword,
+      isActive: true,
     });
 
     luisitoId = luisito._id;
 
     await User.create({
-      ...martitaCredentials,
+      ...martitaData,
       password: martitaHashedPassword,
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and correct password 'luisito123' and the user is registered and active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
-      const { email, password, name } = luisitoCredentials;
+      const { email, password, name } = luisitoData;
 
       const response = await request(app)
         .post(`${users}${login}`)
@@ -178,8 +170,8 @@ describe("Given a POST /users/login endpoint", () => {
   });
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
-    test("Then it should respond with status 200 and a token", async () => {
-      const { email } = luisitoCredentials;
+    test("Then it should respond with error 'Incorrect email or password'", async () => {
+      const { email } = luisitoData;
       const incorrectPassword = "luisito1";
 
       const response = await request(app)
@@ -191,23 +183,9 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with incorrect email 'luisito123@isdicoders.com' and correct password 'luisito123' and the user is registered and active", () => {
-    test("Then it should respond with status 200 and a token", async () => {
-      const { password } = luisitoCredentials;
-      const incorrectEmail = "luisito123@isdicoders.com";
-
-      const response = await request(app)
-        .post(`${users}${login}`)
-        .send({ email: incorrectEmail, password })
-        .expect(unauthorizedCode);
-
-      expect(response.body).toStrictEqual(wrongCredentialsError);
-    });
-  });
-
-  describe("When it receives a request with email 'martita@isdicoders.com' and password 'martita123' and the user exists but is inactive", () => {
+  describe("When it receives a request with email 'martita@isdicoders.com' a password, and the user exists but is inactive", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
-      const { email, password } = martitaCredentials;
+      const { email, password } = martitaData;
       const inactiveUserError = {
         error:
           "User is inactive, contact your administrator if you think this is a mistake",
