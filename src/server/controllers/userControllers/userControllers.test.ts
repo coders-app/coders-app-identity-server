@@ -14,7 +14,6 @@ import { getMockUserCredentials } from "../../../factories/userCredentialsFactor
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
-  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 beforeEach(() => {

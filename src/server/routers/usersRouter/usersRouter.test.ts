@@ -16,7 +16,6 @@ import {
 } from "../../../testUtils/mocks/mockUsers";
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
-import { getMockUserCredentials } from "../../../factories/userCredentialsFactory";
 import { getMockUser } from "../../../factories/userFactory";
 const { users, register, login } = paths;
 
