@@ -3,11 +3,13 @@ export interface UserCredentials {
   password: string;
 }
 
-export interface UserData extends UserCredentials {
+export interface UserData extends Omit<UserCredentials, "password"> {
   name: string;
 }
 
-export interface UserStructure extends UserData {
+export interface UserStructure
+  extends UserData,
+    Pick<UserCredentials, "password"> {
   isAdmin: boolean;
   isActive: boolean;
 }

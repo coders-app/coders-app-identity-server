@@ -16,7 +16,7 @@ import {
 } from "../../../testUtils/mocks/mockUsers";
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
-
+import { getMockUser } from "../../../factories/userFactory";
 const { users, register, login } = paths;
 
 const {
@@ -41,7 +41,7 @@ describe("Given a POST /users/register endpoint", () => {
     await User.deleteMany({});
   });
 
-  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and a password in the body", () => {
+  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com'", () => {
     test("Then it should respond with status 201 and the user's credentials in the body", async () => {
       const newUser = getMockUserData({ name: luisName, email: luisEmail });
 
@@ -59,7 +59,7 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'marta@isdicoders.com', a name and a password in the body but that user is already registered", () => {
+  describe("When it receives a request with email 'marta@isdicoders.com'", () => {
     const existingUser = getMockUserData({ email: martaEmail });
 
     beforeEach(async () => {
@@ -78,16 +78,14 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name, email, password empty", () => {
-    test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Password shouldn't be empty, Email shouldn't be empty'", async () => {
+  describe("When it receives a request with an empty name and empty email", () => {
+    test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Email shouldn't be empty'", async () => {
       const emptyUser: UserData = {
         name: "",
         email: "",
-        password: "",
       };
       const expectedMessage = [
         "Name shouldn't be empty",
-        "Password shouldn't be empty",
         "Email shouldn't be empty",
       ].join("\n");
 
@@ -99,40 +97,23 @@ describe("Given a POST /users/register endpoint", () => {
       expect(response.body).toHaveProperty("error", expectedMessage);
     });
   });
-
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password '12345' and a name", () => {
-    test("Then it should respond with status 400 and 'Password should have 8 characters minimum'", async () => {
-      const newUser = getMockUserData({
-        email: luisEmail,
-        password: "12345",
-      });
-      const expectedMessage = "Password should have 8 characters minimum";
-
-      const response = await request(app)
-        .post(`${users}${register}`)
-        .send(newUser)
-        .expect(badRequestCode);
-
-      expect(response.body).toHaveProperty("error", expectedMessage);
-    });
-  });
 });
 
 describe("Given a POST /users/login endpoint", () => {
   const wrongCredentialsError = { error: "Incorrect email or password" };
 
-  const luisitoData = getMockUserData({ email: luisEmail });
+  const luisitoUser = getMockUser({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
 
-  const martitaData = getMockUserData({ email: martaEmail });
+  const martitaUser = getMockUser({ email: martaEmail });
 
   beforeAll(async () => {
-    const luisitoHashedPassword = await bcrypt.hash(luisitoData.password, 10);
+    const luisitoHashedPassword = await bcrypt.hash(luisitoUser.password, 10);
 
-    const martitaHashedPassword = await bcrypt.hash(martitaData.password, 10);
+    const martitaHashedPassword = await bcrypt.hash(martitaUser.password, 10);
 
     const luisito = await User.create({
-      ...luisitoData,
+      ...luisitoUser,
       password: luisitoHashedPassword,
       isActive: true,
     });
@@ -140,14 +121,14 @@ describe("Given a POST /users/login endpoint", () => {
     luisitoId = luisito._id;
 
     await User.create({
-      ...martitaData,
+      ...martitaUser,
       password: martitaHashedPassword,
     });
   });
 
   describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
-      const { email, password, name } = luisitoData;
+      const { email, password, name } = luisitoUser;
 
       const response = await request(app)
         .post(`${users}${login}`)
@@ -171,7 +152,7 @@ describe("Given a POST /users/login endpoint", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
     test("Then it should respond with error 'Incorrect email or password'", async () => {
-      const { email } = luisitoData;
+      const { email } = luisitoUser;
       const incorrectPassword = "luisito1";
 
       const response = await request(app)
@@ -185,7 +166,7 @@ describe("Given a POST /users/login endpoint", () => {
 
   describe("When it receives a request with email 'martita@isdicoders.com' a password, and the user exists but is inactive", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
-      const { email, password } = martitaData;
+      const { email, password } = martitaUser;
       const inactiveUserError = {
         error:
           "User is inactive, contact your administrator if you think this is a mistake",
