@@ -14,6 +14,7 @@ const {
   SMTP_HOST: smtpHost,
   SMTP_PORT: smtpPort,
   SMTP_USERNAME: smtpUsername,
+  EMAIL_SENDER: emailSender,
 } = process.env;
 
 export const environment = {
@@ -29,7 +30,8 @@ export const environment = {
   smtp: {
     host: smtpHost,
     username: smtpUsername,
+    password: sendgridApiKey,
     port: +smtpPort,
+    emailSender,
   },
-  sendgridApiKey,
 };
