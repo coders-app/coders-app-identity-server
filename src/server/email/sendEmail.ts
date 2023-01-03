@@ -3,6 +3,7 @@ import debugConfig from "debug";
 import chalk from "chalk";
 import { environment } from "../../loadEnvironments.js";
 import type { EmailOptions } from "../../types/types.js";
+import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 const {
   smtp: { emailSender },
@@ -10,7 +11,12 @@ const {
 
 const debug = debugConfig("identity-server:email");
 
-const sendEmail = async ({ to, text, subject, ...rest }: EmailOptions) =>
+const sendEmail = async ({
+  to,
+  text,
+  subject,
+  ...rest
+}: EmailOptions): Promise<SMTPTransport.SentMessageInfo | Error> =>
   new Promise((resolve, reject) => {
     transporter.sendMail(
       {
