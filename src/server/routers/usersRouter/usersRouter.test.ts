@@ -16,7 +16,6 @@ import {
 } from "../../../testUtils/mocks/mockUsers";
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
-
 const { users, register, login } = paths;
 
 const {
@@ -41,7 +40,7 @@ describe("Given a POST /users/register endpoint", () => {
     await User.deleteMany({});
   });
 
-  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and a password in the body", () => {
+  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com'", () => {
     test("Then it should respond with status 201 and the user's credentials in the body", async () => {
       const newUser = getMockUserData({ name: luisName, email: luisEmail });
 
@@ -59,7 +58,7 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'marta@isdicoders.com', a name and a password in the body but that user is already registered", () => {
+  describe("When it receives a request with email 'marta@isdicoders.com'", () => {
     const existingUser = getMockUserData({ email: martaEmail });
 
     beforeEach(async () => {
@@ -78,39 +77,20 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with name, email, password empty", () => {
-    test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Password shouldn't be empty, Email shouldn't be empty'", async () => {
+  describe("When it receives a request with an empty name and empty email", () => {
+    test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Email shouldn't be empty'", async () => {
       const emptyUser: UserData = {
         name: "",
         email: "",
-        password: "",
       };
       const expectedMessage = [
         "Name shouldn't be empty",
-        "Password shouldn't be empty",
         "Email shouldn't be empty",
       ].join("\n");
 
       const response = await request(app)
         .post(`${users}${register}`)
         .send(emptyUser)
-        .expect(badRequestCode);
-
-      expect(response.body).toHaveProperty("error", expectedMessage);
-    });
-  });
-
-  describe("When it receives a request with email 'luisito@isdicoders.com' and password '12345' and a name", () => {
-    test("Then it should respond with status 400 and 'Password should have 8 characters minimum'", async () => {
-      const newUser = getMockUserData({
-        email: luisEmail,
-        password: "12345",
-      });
-      const expectedMessage = "Password should have 8 characters minimum";
-
-      const response = await request(app)
-        .post(`${users}${register}`)
-        .send(newUser)
         .expect(badRequestCode);
 
       expect(response.body).toHaveProperty("error", expectedMessage);

@@ -4,7 +4,6 @@ import type { UserData } from "../types/types";
 
 const userDataFactory = Factory.define<UserData>(() => ({
   name: faker.name.fullName(),
-  password: faker.internet.password(10),
   email: faker.internet.email(),
 }));
 
