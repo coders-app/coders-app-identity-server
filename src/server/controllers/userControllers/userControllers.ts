@@ -5,14 +5,12 @@ import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
-import type { UserCredentials, UserStructure } from "../../../types/types.js";
+import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
 } = environment;
-
-const saltLength = 10;
 
 const {
   successCodes: { createdCode, okCode },
@@ -21,18 +19,15 @@ const {
 } = httpStatusCodes;
 
 export const registerUser = async (
-  req: Request<Record<string, unknown>, Record<string, unknown>, UserStructure>,
+  req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
   res: Response,
   next: NextFunction
 ) => {
-  const { name, password, email } = req.body;
+  const { name, email } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, saltLength);
-
     const newUser = await User.create({
       name,
-      password: hashedPassword,
       email,
     });
 

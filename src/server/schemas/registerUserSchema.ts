@@ -1,7 +1,7 @@
 import { Joi } from "express-validation";
 import type { UserData } from "../../types/types.js";
 import joiTypesError from "./joiTypesErrors.js";
-import { emailSchema, passwordSchema } from "./userCredentialSchemas.js";
+import { emailSchema } from "./userCredentialSchemas.js";
 
 const { stringEmpty } = joiTypesError;
 
@@ -12,7 +12,6 @@ const registerUserSchema = {
       .messages({
         [stringEmpty]: "Name shouldn't be empty",
       }),
-    password: passwordSchema,
     email: emailSchema,
   }),
 };

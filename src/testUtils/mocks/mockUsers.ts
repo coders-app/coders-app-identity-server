@@ -1,11 +1,5 @@
-export const luisUserMock = {
-  name: "Luis",
-  email: "luisito@isdicoders.com",
-  password: "luisito123",
-};
+export const luisName = "Luis";
+export const luisEmail = "luisito@isdicoders.com";
+export const luisPassword = "luisito123";
 
-export const martaUserMock = {
-  name: "Marta",
-  email: "martita@isdicoders.com",
-  password: "martita123",
-};
+export const martaEmail = "martita@isdicoders.com";
