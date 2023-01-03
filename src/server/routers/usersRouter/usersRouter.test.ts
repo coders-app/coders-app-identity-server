@@ -16,6 +16,8 @@ import {
 } from "../../../testUtils/mocks/mockUsers";
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
+import { getMockUserCredentials } from "../../../factories/userCredentialsFactory";
+import { getMockUser } from "../../../factories/userFactory";
 const { users, register, login } = paths;
 
 const {
@@ -101,18 +103,18 @@ describe("Given a POST /users/register endpoint", () => {
 describe("Given a POST /users/login endpoint", () => {
   const wrongCredentialsError = { error: "Incorrect email or password" };
 
-  const luisitoData = getMockUserData({ email: luisEmail });
+  const luisitoUser = getMockUser({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
 
-  const martitaData = getMockUserData({ email: martaEmail });
+  const martitaUser = getMockUser({ email: martaEmail });
 
   beforeAll(async () => {
-    const luisitoHashedPassword = await bcrypt.hash(luisitoData.password, 10);
+    const luisitoHashedPassword = await bcrypt.hash(luisitoUser.password, 10);
 
-    const martitaHashedPassword = await bcrypt.hash(martitaData.password, 10);
+    const martitaHashedPassword = await bcrypt.hash(martitaUser.password, 10);
 
     const luisito = await User.create({
-      ...luisitoData,
+      ...luisitoUser,
       password: luisitoHashedPassword,
       isActive: true,
     });
@@ -120,14 +122,14 @@ describe("Given a POST /users/login endpoint", () => {
     luisitoId = luisito._id;
 
     await User.create({
-      ...martitaData,
+      ...martitaUser,
       password: martitaHashedPassword,
     });
   });
 
   describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
-      const { email, password, name } = luisitoData;
+      const { email, password, name } = luisitoUser;
 
       const response = await request(app)
         .post(`${users}${login}`)
@@ -151,7 +153,7 @@ describe("Given a POST /users/login endpoint", () => {
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
     test("Then it should respond with error 'Incorrect email or password'", async () => {
-      const { email } = luisitoData;
+      const { email } = luisitoUser;
       const incorrectPassword = "luisito1";
 
       const response = await request(app)
@@ -165,7 +167,7 @@ describe("Given a POST /users/login endpoint", () => {
 
   describe("When it receives a request with email 'martita@isdicoders.com' a password, and the user exists but is inactive", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
-      const { email, password } = martitaData;
+      const { email, password } = martitaUser;
       const inactiveUserError = {
         error:
           "User is inactive, contact your administrator if you think this is a mistake",
