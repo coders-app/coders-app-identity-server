@@ -10,6 +10,10 @@ const {
   JWT_SECRET: jwtSecret,
   BASIC_AUTH_USERNAME: basicAuthUsername,
   BASIC_AUTH_PASSWORD: basicAuthPassword,
+  SENDGRID_API_KEY: sendgridApiKey,
+  SMTP_HOST: smtpHost,
+  SMTP_PORT: smtpPort,
+  SMTP_USERNAME: smtpUsername,
 } = process.env;
 
 export const environment = {
@@ -22,4 +26,10 @@ export const environment = {
     username: basicAuthUsername,
     password: basicAuthPassword,
   },
+  smtp: {
+    host: smtpHost,
+    username: smtpUsername,
+    port: +smtpPort,
+  },
+  sendgridApiKey,
 };
