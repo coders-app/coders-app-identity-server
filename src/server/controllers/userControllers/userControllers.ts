@@ -101,7 +101,13 @@ export const loginUser = async (
 
     const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: tokenExpiry });
 
-    res.status(okCode).json({ token });
+    res
+      .status(okCode)
+      .cookie("coders_identity_token", token, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24,
+      })
+      .json({ message: "coders_identity_token has been set" });
   } catch (error: unknown) {
     next(error);
   }
