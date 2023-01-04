@@ -25,6 +25,7 @@ const req: Partial<Request> = {};
 
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
+  cookie: jest.fn().mockReturnThis(),
   json: jest.fn(),
 };
 
@@ -133,7 +134,17 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(okCode);
-      expect(res.json).toHaveBeenCalledWith({ token: mockToken });
+      expect(res.cookie).toHaveBeenCalledWith(
+        "coders_identity_token",
+        mockToken,
+        {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24,
+        }
+      );
+      expect(res.json).toHaveBeenCalledWith({
+        message: "coders_identity_token has been set",
+      });
     });
   });
 
