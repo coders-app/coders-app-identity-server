@@ -2,7 +2,7 @@ import type { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError";
 import {
-  mockToken,
+  getMockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
@@ -24,6 +24,9 @@ const next: NextFunction = jest.fn();
 beforeEach(() => jest.clearAllMocks());
 
 describe("Given the auth controller", () => {
+  const mockToken = getMockToken();
+  const mockAuthorizationHeader = `Bearer ${mockToken}`;
+
   describe("When it receives a request with no auth header", () => {
     test("Then it should invoke next with an error with status 401 and message 'No Token provided'", () => {
       const expectedErrorMessage = "No Token provided";
@@ -82,7 +85,7 @@ describe("Given the auth controller", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockToken);
+      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
 
       userAuthentication(req as Request, res as Response, next);
 
@@ -90,11 +93,11 @@ describe("Given the auth controller", () => {
       expect(res.json).toHaveBeenCalledWith({ userPayload: mockVerifyToken });
     });
 
-    test("Then it should invoke the response method json with  name 'admin'and id: '637ca68b2e7c24060c5c7e20' as payload", () => {
+    test("Then it should invoke the response method json with name 'admin'and id: '637ca68b2e7c24060c5c7e20' as payload", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockToken);
+      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
 
       userAuthentication(req as Request, res as Response, next);
 

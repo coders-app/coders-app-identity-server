@@ -10,7 +10,9 @@ const {
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 
-const { jwtSecret } = environment;
+const {
+  jwt: { jwtSecret },
+} = environment;
 
 const userAuthentication = (
   req: Request,

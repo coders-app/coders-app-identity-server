@@ -15,6 +15,7 @@ const {
   SMTP_USERNAME: smtpUsername,
   SMTP_PASSWORD: smtpPassword,
   EMAIL_SENDER: emailSender,
+  TOKEN_EXPIRY: tokenExpiry,
 } = process.env;
 
 export const environment = {
@@ -22,7 +23,10 @@ export const environment = {
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
   originWhitelist: originWhitelist.split(","),
-  jwtSecret,
+  jwt: {
+    jwtSecret,
+    tokenExpiry,
+  },
   basicAuth: {
     username: basicAuthUsername,
     password: basicAuthPassword,

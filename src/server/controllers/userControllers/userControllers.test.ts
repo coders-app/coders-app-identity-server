@@ -5,6 +5,7 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
+import { getMockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
 import type { UserWithId } from "../../../types/types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
@@ -73,6 +74,7 @@ describe("Given a registerUser Controller", () => {
 describe("Given a loginUser controller", () => {
   const incorrectCredentialsMessage = "Incorrect email or password";
   const userCredentials = getMockUserCredentials({ email: luisEmail });
+  const mockToken = getMockToken();
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
@@ -119,19 +121,19 @@ describe("Given a loginUser controller", () => {
   describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user exists and is active", () => {
     test("Then it should invoke the response's status method with 200 and json with a token", async () => {
       req.body = userCredentials;
-      const token = "testtoken";
+
       const existingUser = getMockUser({ ...userCredentials, isActive: true });
 
       User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
       bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
 
-      jwt.sign = jest.fn().mockReturnValueOnce(token);
+      jwt.sign = jest.fn().mockReturnValueOnce(mockToken);
 
       await loginUser(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(okCode);
-      expect(res.json).toHaveBeenCalledWith({ token });
+      expect(res.json).toHaveBeenCalledWith({ token: mockToken });
     });
   });
 
@@ -139,6 +141,7 @@ describe("Given a loginUser controller", () => {
     test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       req.body = userCredentials;
       const existingUser = getMockUser(userCredentials);
+
       const inactiveUserError = new CustomError(
         "User is inactive",
         unauthorizedCode,
