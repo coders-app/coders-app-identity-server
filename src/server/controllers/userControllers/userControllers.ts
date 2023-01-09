@@ -7,6 +7,7 @@ import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -17,6 +18,8 @@ const {
   clientErrors: { conflictCode, unauthorizedCode },
   serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
+
+const { cookieName, cookieMaxAge } = singleSignOnCookie;
 
 export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
@@ -103,9 +106,9 @@ export const loginUser = async (
 
     res
       .status(okCode)
-      .cookie("coders_identity_token", token, {
+      .cookie(cookieName, token, {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: cookieMaxAge,
       })
       .json({ message: "coders_identity_token has been set" });
   } catch (error: unknown) {

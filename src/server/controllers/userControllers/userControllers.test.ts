@@ -11,11 +11,14 @@ import type { UserWithId } from "../../../types/types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
 } = httpStatusCodes;
+
+const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -134,14 +137,10 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(okCode);
-      expect(res.cookie).toHaveBeenCalledWith(
-        "coders_identity_token",
-        mockToken,
-        {
-          httpOnly: true,
-          maxAge: 1000 * 60 * 60 * 24,
-        }
-      );
+      expect(res.cookie).toHaveBeenCalledWith(cookieName, mockToken, {
+        httpOnly: true,
+        maxAge: cookieMaxAge,
+      });
       expect(res.json).toHaveBeenCalledWith({
         message: "coders_identity_token has been set",
       });
