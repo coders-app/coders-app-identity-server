@@ -10,6 +10,11 @@ const {
   JWT_SECRET: jwtSecret,
   BASIC_AUTH_USERNAME: basicAuthUsername,
   BASIC_AUTH_PASSWORD: basicAuthPassword,
+  SMTP_HOST: smtpHost,
+  SMTP_PORT: smtpPort,
+  SMTP_USERNAME: smtpUsername,
+  SMTP_PASSWORD: smtpPassword,
+  EMAIL_SENDER: emailSender,
   TOKEN_EXPIRY: tokenExpiry,
 } = process.env;
 
@@ -25,5 +30,12 @@ export const environment = {
   basicAuth: {
     username: basicAuthUsername,
     password: basicAuthPassword,
+  },
+  smtp: {
+    host: smtpHost,
+    username: smtpUsername,
+    password: smtpPassword,
+    port: +smtpPort,
+    emailSender,
   },
 };
