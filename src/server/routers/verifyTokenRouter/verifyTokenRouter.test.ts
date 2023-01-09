@@ -7,6 +7,7 @@ import {
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
+import httpErrorMessages from "../../../utils/httpErrorMessages.js";
 
 const { verifyToken, users } = paths;
 
@@ -14,9 +15,10 @@ const {
   successCodes: { okCode },
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
-
+const {
+  clientErrors: { unauthorizedMsg },
+} = httpErrorMessages;
 describe("Given a GET /verify-token endpoint", () => {
-  const expectedMessage = "Unauthorized";
   const mockToken = getMockToken();
   const mockAuthorizationHeader = `Bearer ${mockToken}`;
 
@@ -30,7 +32,7 @@ describe("Given a GET /verify-token endpoint", () => {
         .get(`${users}${verifyToken}`)
         .expect(expectedStatus);
 
-      expect(response.body).toHaveProperty("error", expectedMessage);
+      expect(response.body).toHaveProperty("error", unauthorizedMsg);
     });
   });
 
@@ -61,7 +63,7 @@ describe("Given a GET /verify-token endpoint", () => {
         .set("Authorization", "Bearer #")
         .expect(expectedStatus);
 
-      expect(response.body).toHaveProperty("error", expectedMessage);
+      expect(response.body).toHaveProperty("error", unauthorizedMsg);
     });
   });
 });

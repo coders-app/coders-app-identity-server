@@ -17,13 +17,21 @@ import {
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
+import httpErrorMessages from "../../../utils/httpErrorMessages";
 const { users, register, login } = paths;
 
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { conflictCode, badRequestCode, unauthorizedCode },
 } = httpStatusCodes;
-
+const {
+  clientErrors: {
+    existingUserMsg,
+    emptyNameMsg,
+    emptyEmailMsg,
+    incorrectEmailOrPassword,
+  },
+} = httpErrorMessages;
 let server: MongoMemoryServer;
 
 beforeAll(async () => {
@@ -67,14 +75,12 @@ describe("Given a POST /users/register endpoint", () => {
     });
 
     test("Then it should respond with code 409 and 'User already exists'", async () => {
-      const expectedError = "User already exists";
-
       const response = await request(app)
         .post(`${users}${register}`)
         .send(existingUser)
         .expect(conflictCode);
 
-      expect(response.body).toHaveProperty("error", expectedError);
+      expect(response.body).toHaveProperty("error", existingUserMsg);
     });
   });
 
@@ -84,10 +90,7 @@ describe("Given a POST /users/register endpoint", () => {
         name: "",
         email: "",
       };
-      const expectedMessage = [
-        "Name shouldn't be empty",
-        "Email shouldn't be empty",
-      ].join("\n");
+      const expectedMessage = [emptyNameMsg, emptyEmailMsg].join("\n");
 
       const response = await request(app)
         .post(`${users}${register}`)
@@ -100,7 +103,7 @@ describe("Given a POST /users/register endpoint", () => {
 });
 
 describe("Given a POST /users/login endpoint", () => {
-  const wrongCredentialsError = { error: "Incorrect email or password" };
+  const wrongCredentialsError = { error: incorrectEmailOrPassword };
 
   const luisitoUser = getMockUser({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
