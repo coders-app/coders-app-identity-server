@@ -2,12 +2,16 @@ import type { Request, NextFunction, Response } from "express";
 import generalError, { unknownEndpoint } from "./errors";
 import CustomError from "../../CustomError/CustomError";
 import httpStatusCodes from "../../utils/httpStatusCodes";
+import httpErrorMessages from "../../utils/httpErrorMessages";
 
 const {
   serverErrors: { internalServerErrorCode },
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
-
+const {
+  clientErrors: { notFoundMsg, unknownEndpointMsg },
+  serverErrors: { internalServerErrorMsg },
+} = httpErrorMessages;
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn(),
@@ -20,8 +24,7 @@ beforeEach(() => {
 describe("Given the generalError middleware", () => {
   describe("When it receives an error with private message 'There was an error' and a response", () => {
     test("Then it should invoke the response's status method with 500 and json with 'There was an error on the server'", () => {
-      const privateMessage = "There was an error";
-      const error = new Error(privateMessage);
+      const error = new Error(internalServerErrorMsg);
       const expectedPublicMessage = "There was an error on the server";
 
       generalError(error as CustomError, null, res as Response, null);
@@ -33,10 +36,9 @@ describe("Given the generalError middleware", () => {
 
   describe("When it receives a custom error with private message 'Not found', status code 404 and public message 'Resource not found' and a response", () => {
     test("Then it should invoke the response's status method with the received code and json with the received public message", () => {
-      const privateMessage = "Not found";
       const publicMessage = "Resource not found";
       const customError = new CustomError(
-        privateMessage,
+        notFoundMsg,
         notFoundCode,
         publicMessage
       );
@@ -57,7 +59,7 @@ describe("Given an unknownEndpoint middleware", () => {
       const req: Partial<Request> = { path };
       const next: NextFunction = jest.fn();
       const expectedError = new CustomError(
-        `${errorMessage}: ${path}`,
+        unknownEndpointMsg + path,
         notFoundCode,
         errorMessage
       );
