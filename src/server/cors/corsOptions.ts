@@ -2,12 +2,20 @@ import type { CorsOptions } from "cors";
 import { environment } from "../../loadEnvironments.js";
 import CustomError from "../../CustomError/CustomError.js";
 import httpStatusCodes from "../../utils/httpStatusCodes.js";
+import httpErrorMessages from "../../utils/httpErrorMessages.js";
+import publicHttpErrorMessages from "../../utils/publicHttpErrorMessages.js";
 
 const { originWhitelist } = environment;
 
 const {
   clientErrors: { badRequestCode },
 } = httpStatusCodes;
+const {
+  clientErrors: { badRequestMsg },
+} = httpErrorMessages;
+const {
+  publicClientErrors: { publicBadRequestMsg },
+} = publicHttpErrorMessages;
 
 const corsOptions: CorsOptions = {
   origin(requestOrigin, callback) {
@@ -18,9 +26,9 @@ const corsOptions: CorsOptions = {
 
     callback(
       new CustomError(
-        `${requestOrigin} blocked by CORS policy`,
+        badRequestMsg,
         badRequestCode,
-        "Not allowed by CORS"
+        requestOrigin + publicBadRequestMsg
       ),
       requestOrigin
     );
