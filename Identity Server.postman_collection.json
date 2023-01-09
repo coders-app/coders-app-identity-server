@@ -1,0 +1,117 @@
+{
+  "info": {
+    "_postman_id": "973b5771-8caf-476c-a80e-cc1af719eb95",
+    "name": "Identity Server",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25059219"
+  },
+  "item": [
+    {
+      "name": "Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url_base}}",
+          "host": ["{{url_base}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register user",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"Admin\",\r\n    \"password\": \"AdminAdmin\",\r\n    \"email\": \"Admin@admin.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url_base}}users/register",
+          "host": ["{{url_base}}users"],
+          "path": ["register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Verify user token",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{valid_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url_base}}users/verify-token",
+          "host": ["{{url_base}}users"],
+          "path": ["verify-token"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login user",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"Admin@admin.com\",\r\n    \"password\": \"AdminAdmin\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url_base}}users/login",
+          "host": ["{{url_base}}users"],
+          "path": ["login"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url_base",
+      "value": "https://coders-app-identity-server.onrender.com/",
+      "type": "string"
+    },
+    {
+      "key": "valid_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW4iLCJpZCI6IjYzYWNhNjllZWMwZWYyZjgyMWQ1N2Y0MCIsImlhdCI6MTY3MjMyMDQ2Nn0.kKGNI7O3AQvSNNugmhbLmSdsqC9VRC_crhEbcn_Q4Hk",
+      "type": "string"
+    }
+  ]
+}
