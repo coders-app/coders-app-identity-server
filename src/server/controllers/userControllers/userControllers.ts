@@ -31,6 +31,16 @@ export const registerUser = async (
       email,
     });
 
+    const activationToken = JSON.stringify({
+      id: newUser._id.toString(),
+    });
+
+    const activationKey = await bcrypt.hash(activationToken, 20);
+
+    newUser.activationKey = activationKey;
+
+    await newUser.save();
+
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
   } catch (error: unknown) {
     if ((error as Error).message.includes("duplicate key")) {

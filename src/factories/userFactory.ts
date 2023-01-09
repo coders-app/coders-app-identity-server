@@ -10,6 +10,7 @@ const userFactory = Factory.define<UserWithId>(() => ({
   isActive: false,
   isAdmin: false,
   _id: new mongoose.Types.ObjectId().toString(),
+  activationKey: faker.random.alphaNumeric(20),
 }));
 
 export const getMockUser = (params?: Partial<UserWithId>) =>

@@ -23,6 +23,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    activationKey: {
+      type: String,
+      expires: 86400000,
+    },
   },
   {
     timestamps: true,

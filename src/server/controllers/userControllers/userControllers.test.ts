@@ -40,7 +40,11 @@ describe("Given a registerUser Controller", () => {
 
       req.body = registerUserBody;
 
-      User.create = jest.fn().mockResolvedValueOnce(userCreatedMock);
+      User.create = jest
+        .fn()
+        .mockReturnValueOnce({ ...userCreatedMock, save: jest.fn() });
+
+      bcrypt.hash = jest.fn().mockResolvedValueOnce("mock activation key");
 
       await registerUser(req as Request, res as Response, next as NextFunction);
 
