@@ -2,16 +2,16 @@ import type { Request, NextFunction, Response } from "express";
 import generalError, { unknownEndpoint } from "./errors";
 import CustomError from "../../CustomError/CustomError";
 import httpStatusCodes from "../../utils/httpStatusCodes";
-import httpErrorMessages from "../../utils/httpErrorMessages";
+import errorMessages from "../../utils/errorMessages";
 
 const {
   serverErrors: { internalServerErrorCode },
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { notFoundMsg, unknownEndpointMsg },
-  serverErrors: { internalServerErrorMsg },
-} = httpErrorMessages;
+  clientErrors: { notFoundMessage, unknownEndpointMessage },
+  serverErrors: { internalServerErrorMessage },
+} = errorMessages;
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn(),
@@ -24,7 +24,7 @@ beforeEach(() => {
 describe("Given the generalError middleware", () => {
   describe("When it receives an error with private message 'There was an error' and a response", () => {
     test("Then it should invoke the response's status method with 500 and json with 'There was an error on the server'", () => {
-      const error = new Error(internalServerErrorMsg);
+      const error = new Error(internalServerErrorMessage);
       const expectedPublicMessage = "There was an error on the server";
 
       generalError(error as CustomError, null, res as Response, null);
@@ -38,7 +38,7 @@ describe("Given the generalError middleware", () => {
     test("Then it should invoke the response's status method with the received code and json with the received public message", () => {
       const publicMessage = "Resource not found";
       const customError = new CustomError(
-        notFoundMsg,
+        notFoundMessage,
         notFoundCode,
         publicMessage
       );
@@ -59,7 +59,7 @@ describe("Given an unknownEndpoint middleware", () => {
       const req: Partial<Request> = { path };
       const next: NextFunction = jest.fn();
       const expectedError = new CustomError(
-        unknownEndpointMsg + path,
+        unknownEndpointMessage + path,
         notFoundCode,
         errorMessage
       );

@@ -5,15 +5,15 @@ import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
 import CustomError from "../../CustomError/CustomError.js";
 import httpStatusCodes from "../../utils/httpStatusCodes.js";
-import httpErrorMessages from "../../utils/httpErrorMessages.js";
+import errorMessages from "../../utils/errorMessages.js";
 
 const {
   serverErrors: { internalServerErrorCode },
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { unknownEndpointMsg },
-} = httpErrorMessages;
+  clientErrors: { unknownEndpointMessage },
+} = errorMessages;
 const debug = debugCreator("identity-server:middlewares:errors");
 
 const generalError = (
@@ -50,7 +50,11 @@ export const unknownEndpoint = (
   const { path } = req;
 
   next(
-    new CustomError(unknownEndpointMsg + path, notFoundCode, "Unknown endpoint")
+    new CustomError(
+      unknownEndpointMessage + path,
+      notFoundCode,
+      "Unknown endpoint"
+    )
   );
 };
 
