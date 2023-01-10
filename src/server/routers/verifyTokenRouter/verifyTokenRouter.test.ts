@@ -7,7 +7,7 @@ import {
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
-import httpErrorMessages from "../../../utils/httpErrorMessages.js";
+import errorMessages from "../../../utils/errorMessages.js";
 
 const { verifyToken, users } = paths;
 
@@ -16,8 +16,8 @@ const {
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { unauthorizedMsg },
-} = httpErrorMessages;
+  clientErrors: { unauthorizedMessage },
+} = errorMessages;
 describe("Given a GET /verify-token endpoint", () => {
   const mockToken = getMockToken();
   const mockAuthorizationHeader = `Bearer ${mockToken}`;
@@ -32,7 +32,7 @@ describe("Given a GET /verify-token endpoint", () => {
         .get(`${users}${verifyToken}`)
         .expect(expectedStatus);
 
-      expect(response.body).toHaveProperty("error", unauthorizedMsg);
+      expect(response.body).toHaveProperty("error", unauthorizedMessage);
     });
   });
 
@@ -63,7 +63,7 @@ describe("Given a GET /verify-token endpoint", () => {
         .set("Authorization", "Bearer #")
         .expect(expectedStatus);
 
-      expect(response.body).toHaveProperty("error", unauthorizedMsg);
+      expect(response.body).toHaveProperty("error", unauthorizedMessage);
     });
   });
 });
