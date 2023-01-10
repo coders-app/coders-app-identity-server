@@ -17,7 +17,7 @@ import {
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
-import httpErrorMessages from "../../../utils/httpErrorMessages";
+import errorMessages from "../../../utils/errorMessages";
 const { users, register, login } = paths;
 
 const {
@@ -26,12 +26,12 @@ const {
 } = httpStatusCodes;
 const {
   clientErrors: {
-    existingUserMsg,
-    emptyNameMsg,
-    emptyEmailMsg,
-    incorrectEmailOrPassword,
+    existingUserMessage,
+    emptyNameMessage,
+    emptyEmailMessage,
+    incorrectEmailOrPasswordMessage,
   },
-} = httpErrorMessages;
+} = errorMessages;
 let server: MongoMemoryServer;
 
 beforeAll(async () => {
@@ -80,7 +80,7 @@ describe("Given a POST /users/register endpoint", () => {
         .send(existingUser)
         .expect(conflictCode);
 
-      expect(response.body).toHaveProperty("error", existingUserMsg);
+      expect(response.body).toHaveProperty("error", existingUserMessage);
     });
   });
 
@@ -90,7 +90,7 @@ describe("Given a POST /users/register endpoint", () => {
         name: "",
         email: "",
       };
-      const expectedMessage = [emptyNameMsg, emptyEmailMsg].join("\n");
+      const expectedMessage = [emptyNameMessage, emptyEmailMessage].join("\n");
 
       const response = await request(app)
         .post(`${users}${register}`)
@@ -103,7 +103,7 @@ describe("Given a POST /users/register endpoint", () => {
 });
 
 describe("Given a POST /users/login endpoint", () => {
-  const wrongCredentialsError = { error: incorrectEmailOrPassword };
+  const wrongCredentialsError = { error: incorrectEmailOrPasswordMessage };
 
   const luisitoUser = getMockUser({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
