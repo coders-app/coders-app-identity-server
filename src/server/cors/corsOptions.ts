@@ -2,8 +2,8 @@ import type { CorsOptions } from "cors";
 import { environment } from "../../loadEnvironments.js";
 import CustomError from "../../CustomError/CustomError.js";
 import httpStatusCodes from "../../utils/httpStatusCodes.js";
-import httpErrorMessages from "../../utils/httpErrorMessages.js";
-import publicHttpErrorMessages from "../../utils/publicHttpErrorMessages.js";
+import errorMessages from "../../utils/errorMessages.js";
+import publicErrorMessages from "../../utils/publicErrorMessages.js";
 
 const { originWhitelist } = environment;
 
@@ -11,11 +11,11 @@ const {
   clientErrors: { badRequestCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { badRequestMsg },
-} = httpErrorMessages;
+  clientErrors: { badRequestMessage },
+} = errorMessages;
 const {
-  publicClientErrors: { publicBadRequestMsg },
-} = publicHttpErrorMessages;
+  publicClientErrors: { publicBadRequestMessage },
+} = publicErrorMessages;
 
 const corsOptions: CorsOptions = {
   origin(requestOrigin, callback) {
@@ -26,9 +26,9 @@ const corsOptions: CorsOptions = {
 
     callback(
       new CustomError(
-        badRequestMsg,
+        badRequestMessage,
         badRequestCode,
-        requestOrigin + publicBadRequestMsg
+        requestOrigin + publicBadRequestMessage
       ),
       requestOrigin
     );
