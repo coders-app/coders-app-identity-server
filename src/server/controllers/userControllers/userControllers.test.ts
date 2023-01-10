@@ -11,7 +11,7 @@ import type { UserWithId } from "../../../types/types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
-import httpErrorMessages from "../../../utils/httpErrorMessages.js";
+import errorMessages from "../../../utils/errorMessages.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -19,12 +19,12 @@ const {
 } = httpStatusCodes;
 const {
   clientErrors: {
-    userNotFoundMsg,
-    incorrectPasswordMsg,
-    inactiveUserMsg,
-    duplicateKeyMsg,
+    userNotFoundMessage,
+    incorrectPasswordMessage,
+    inactiveUserMessage,
+    duplicateKeyMessage,
   },
-} = httpErrorMessages;
+} = errorMessages;
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -66,7 +66,7 @@ describe("Given a registerUser Controller", () => {
   describe("When it receives a request with a user name that already exist", () => {
     test("Then it should call next with an error message 'User already exists'", async () => {
       const customErrorDuplicateKey = new CustomError(
-        duplicateKeyMsg,
+        duplicateKeyMessage,
         conflictCode,
         "User already exists"
       );
@@ -91,7 +91,7 @@ describe("Given a loginUser controller", () => {
       User.findOne = jest.fn().mockResolvedValueOnce(null);
 
       const userNotFoundError = new CustomError(
-        userNotFoundMsg,
+        userNotFoundMessage,
         unauthorizedCode,
         incorrectCredentialsMessage
       );
@@ -115,7 +115,7 @@ describe("Given a loginUser controller", () => {
       bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
 
       const incorrectPasswordError = new CustomError(
-        incorrectPasswordMsg,
+        incorrectPasswordMessage,
         unauthorizedCode,
         incorrectCredentialsMessage
       );
@@ -151,7 +151,7 @@ describe("Given a loginUser controller", () => {
       const existingUser = getMockUser(userCredentials);
 
       const inactiveUserError = new CustomError(
-        inactiveUserMsg,
+        inactiveUserMessage,
         unauthorizedCode,
         "User is inactive, contact your administrator if you think this is a mistake"
       );
