@@ -5,7 +5,7 @@ import {
   getMockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
-import httpErrorMessages from "../../../utils/httpErrorMessages";
+import errorMessages from "../../../utils/errorMessages";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
 import userAuthentication from "./authControllers";
 
@@ -13,8 +13,8 @@ const {
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { notTokenMsg, missingBearerMsg },
-} = httpErrorMessages;
+  clientErrors: { notTokenMessage, missingBearerMessage },
+} = errorMessages;
 const req: Partial<Request> = {};
 
 const res: Partial<Response> = {
@@ -34,7 +34,7 @@ describe("Given the auth controller", () => {
     test("Then it should invoke next with an error with status 401 and message 'No Token provided'", () => {
       const expectedErrorMessage = "No Token provided";
       const noTokenError = new CustomError(
-        notTokenMsg,
+        notTokenMessage,
         unauthorizedCode,
         expectedErrorMessage
       );
@@ -51,7 +51,7 @@ describe("Given the auth controller", () => {
     test("Then it should invoke next with an error with status 401 and message 'Missing Bearer in token'", () => {
       const expectedErrorMessage = "Missing Bearer in token";
       const noBearerError = new CustomError(
-        missingBearerMsg,
+        missingBearerMessage,
         unauthorizedCode,
         expectedErrorMessage
       );
