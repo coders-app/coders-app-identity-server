@@ -1,18 +1,18 @@
 import request from "supertest";
 import app from "./app";
 import httpStatusCodes from "../utils/httpStatusCodes";
-import httpErrorMessages from "../utils/httpErrorMessages";
-import publicHttpErrorMessages from "../utils/publicHttpErrorMessages";
+import errorMessages from "../utils/errorMessages.js";
+import publicErrorMessages from "../utils/publicErrorMessages.js";
 
 const {
   clientErrors: { badRequestCode, notFoundCode },
 } = httpStatusCodes;
 const {
-  clientErrors: { unknownEndpointMsg },
-} = httpErrorMessages;
+  clientErrors: { unknownEndpointMessage },
+} = errorMessages;
 const {
-  publicClientErrors: { publicBadRequestMsg },
-} = publicHttpErrorMessages;
+  publicClientErrors: { publicBadRequestMessage },
+} = publicErrorMessages;
 describe("Given a GET / endpoint", () => {
   describe("When it receives a request from an origin that is not whitelisted", () => {
     test("Then it should respond with status 400 and the message 'Blocked by CORS'", async () => {
@@ -25,7 +25,7 @@ describe("Given a GET / endpoint", () => {
 
       expect(response.body).toHaveProperty(
         "error",
-        unknownOrigin + publicBadRequestMsg
+        unknownOrigin + publicBadRequestMessage
       );
     });
   });
@@ -40,7 +40,7 @@ describe("Given a GET /not-found endpoint", () => {
         .get(unknownEndpoint)
         .expect(notFoundCode);
 
-      expect(response.body).toHaveProperty("error", unknownEndpointMsg);
+      expect(response.body).toHaveProperty("error", unknownEndpointMessage);
     });
   });
 });
