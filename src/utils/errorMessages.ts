@@ -10,7 +10,7 @@ const errorMessages = {
     missingBearerMessage: "Missing Bearer in token",
     unauthorizedMessage: "Unauthorized",
     incorrectPasswordMessage: "Incorrect password",
-    incorrectEmailOrPassword: "Incorrect email or password",
+    incorrectEmailOrPasswordMessage: "Incorrect email or password",
     userNotFoundMessage: "User not found",
     existingUserMessage: "User already exists",
     inactiveUserMessage: "User is inactive",
