@@ -110,7 +110,7 @@ export const loginUser = async (
         httpOnly: true,
         maxAge: cookieMaxAge,
       })
-      .json({ message: "coders_identity_token has been set" });
+      .json({ message: `${cookieName} has been set` });
   } catch (error: unknown) {
     next(error);
   }
