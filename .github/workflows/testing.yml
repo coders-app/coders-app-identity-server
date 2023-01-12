@@ -21,4 +21,9 @@ jobs:
           MONGODB_URL: ${{ secrets.MONGODB_URL }}
           DEBUG: ${{ secrets.DEBUG }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.JWT_SECRET }}
+          SMTP_USERNAME: ${{ secrets.JWT_SECRET }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_SENDER: ${{ secrets.JWT_SECRET }}
           TOKEN_EXPIRY: ${{ secrets.TOKEN_EXPIRY}}
