@@ -7,6 +7,7 @@ import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -17,6 +18,8 @@ const {
   clientErrors: { conflictCode, unauthorizedCode },
   serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
+
+const { cookieName, cookieMaxAge } = singleSignOnCookie;
 
 export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
@@ -101,7 +104,13 @@ export const loginUser = async (
 
     const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: tokenExpiry });
 
-    res.status(okCode).json({ token });
+    res
+      .status(okCode)
+      .cookie(cookieName, token, {
+        httpOnly: true,
+        maxAge: cookieMaxAge,
+      })
+      .json({ message: `${cookieName} has been set` });
   } catch (error: unknown) {
     next(error);
   }

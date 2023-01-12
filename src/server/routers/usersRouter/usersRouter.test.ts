@@ -17,6 +17,7 @@ import {
 import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
+import cookieParser from "../../../testUtils/cookieParser";
 const { users, register, login } = paths;
 
 const {
@@ -135,17 +136,19 @@ describe("Given a POST /users/login endpoint", () => {
         .send({ email, password })
         .expect(okCode);
 
-      expect(response.body).toHaveProperty("token");
+      expect(response.body).toHaveProperty("message");
 
-      const { token } = response.body as { token: string };
+      const { message } = response.body as { message: string };
+      const [identityCookie] = response.get("Set-Cookie");
+      const parsedCookie = cookieParser(identityCookie);
+      const token = parsedCookie.coders_identity_token;
+      const tokenPayload = jwt.decode(token as string);
 
-      const tokenPayload = jwt.decode(token);
-
+      expect(message).toBe("coders_identity_token has been set");
       expect(tokenPayload as CustomTokenPayload).toHaveProperty(
         "id",
         luisitoId.toString()
       );
-
       expect(tokenPayload as CustomTokenPayload).toHaveProperty("name", name);
     });
   });
