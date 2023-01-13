@@ -12,6 +12,8 @@ import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 
+jest.mock("../../email/sendEmail/sendEmail.js");
+
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
@@ -34,7 +36,7 @@ describe("Given a registerUser Controller", () => {
   const registerUserBody = getMockUserData({ email: luisEmail });
 
   describe("When it receives a request with a user data with email: 'luisito@isdicoders.com'", () => {
-    test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com'", async () => {
+    test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com", async () => {
       const userCreatedMock: UserWithId = getMockUser(registerUserBody);
       const expectedStatus = createdCode;
 
