@@ -19,7 +19,7 @@ const {
 } = process.env;
 
 export const environment = {
-  port,
+  port: +port || 4000,
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
   originWhitelist: originWhitelist.split(","),
