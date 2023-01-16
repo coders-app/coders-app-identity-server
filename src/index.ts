@@ -14,7 +14,7 @@ const { MongoServerError } = mongo;
 const { port, mongoDbUrl } = environment;
 
 try {
-  await startServer(+port);
+  await startServer(port);
   debug(chalk.blue(`Server listening on port ${port}`));
 
   await connectDatabase(mongoDbUrl);
