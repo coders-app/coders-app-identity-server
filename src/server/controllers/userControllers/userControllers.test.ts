@@ -11,6 +11,7 @@ import type { UserWithId } from "../../../types/types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 jest.mock("../../email/sendEmail/sendEmail.js");
 
@@ -18,6 +19,8 @@ const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
 } = httpStatusCodes;
+
+const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -27,6 +30,7 @@ const req: Partial<Request> = {};
 
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
+  cookie: jest.fn().mockReturnThis(),
   json: jest.fn(),
 };
 
@@ -139,7 +143,13 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, res as Response, next);
 
       expect(res.status).toHaveBeenCalledWith(okCode);
-      expect(res.json).toHaveBeenCalledWith({ token: mockToken });
+      expect(res.cookie).toHaveBeenCalledWith(cookieName, mockToken, {
+        httpOnly: true,
+        maxAge: cookieMaxAge,
+      });
+      expect(res.json).toHaveBeenCalledWith({
+        message: "coders_identity_token has been set",
+      });
     });
   });
 
