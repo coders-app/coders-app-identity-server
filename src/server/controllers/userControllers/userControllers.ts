@@ -7,6 +7,7 @@ import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
+import { loginErrors } from "../../../utils/unifiedErrors.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -14,9 +15,12 @@ const {
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { conflictCode, unauthorizedCode },
+  clientErrors: { conflictCode },
   serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
+
+const { userNotFoundError, incorrectPasswordError, inactiveUserError } =
+  loginErrors;
 
 export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
@@ -66,31 +70,16 @@ export const loginUser = async (
 
   try {
     const user = await User.findOne({ email });
-
-    const unauthorizedMessage = "Incorrect email or password";
-
     if (!user) {
-      throw new CustomError(
-        "User not found",
-        unauthorizedCode,
-        unauthorizedMessage
-      );
+      throw userNotFoundError;
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      throw new CustomError(
-        "Incorrect password",
-        unauthorizedCode,
-        unauthorizedMessage
-      );
+      throw incorrectPasswordError;
     }
 
     if (!user.isActive) {
-      throw new CustomError(
-        "User is inactive",
-        unauthorizedCode,
-        "User is inactive, contact your administrator if you think this is a mistake"
-      );
+      throw inactiveUserError;
     }
 
     const tokenPayload: CustomTokenPayload = {
