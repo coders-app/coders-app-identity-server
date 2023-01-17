@@ -46,3 +46,15 @@ export const registerErrors = {
     "The password should have at least 8 characters"
   ),
 };
+export const userAuthenticationErrors = {
+  noTokenError: new CustomError(
+    "No Token provided",
+    unauthorizedCode,
+    "No Token provided"
+  ),
+  missingBearerError: new CustomError(
+    "Missing Bearer in token",
+    unauthorizedCode,
+    "Missing Bearer in token"
+  ),
+};

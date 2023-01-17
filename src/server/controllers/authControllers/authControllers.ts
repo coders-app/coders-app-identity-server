@@ -4,11 +4,13 @@ import { environment } from "../../../loadEnvironments.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import type { CustomTokenPayload } from "../userControllers/types.js";
+import { userAuthenticationErrors } from "../../../utils/unifiedErrors.js";
 
 const {
   successCodes: { okCode },
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
+const { noTokenError, missingBearerError } = userAuthenticationErrors;
 
 const {
   jwt: { jwtSecret },
@@ -23,19 +25,11 @@ const userAuthentication = (
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
-      throw new CustomError(
-        "No Token provided",
-        unauthorizedCode,
-        "No Token provided"
-      );
+      throw noTokenError;
     }
 
     if (!authHeader.startsWith("Bearer")) {
-      throw new CustomError(
-        "Missing Bearer in token",
-        unauthorizedCode,
-        "Missing Bearer in token"
-      );
+      throw missingBearerError;
     }
 
     const token = authHeader.replace(/^Bearer\s*/, "");
