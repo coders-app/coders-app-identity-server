@@ -2,7 +2,8 @@ import CustomError from "../CustomError/CustomError";
 import httpStatusCodes from "./httpStatusCodes";
 
 const {
-  clientErrors: { unauthorizedCode },
+  clientErrors: { conflictCode, unauthorizedCode },
+  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 export const loginErrors = {
@@ -21,5 +22,27 @@ export const loginErrors = {
     "User is inactive",
     unauthorizedCode,
     "User is inactive, contact your administrator if you think this is a mistake"
+  ),
+};
+export const registerErrors = {
+  duplicateKeyError: new CustomError(
+    "Duplicate key",
+    conflictCode,
+    "User already exists"
+  ),
+  registerGeneralError: new CustomError(
+    "Server user error",
+    internalServerErrorCode,
+    "Error creating a new user"
+  ),
+  alreadyRegisteredError: new CustomError(
+    "Existing user",
+    conflictCode,
+    "That username is taken"
+  ),
+  invalidPasswordError: new CustomError(
+    "Password invalid",
+    conflictCode,
+    "The password should have at least 8 characters"
   ),
 };

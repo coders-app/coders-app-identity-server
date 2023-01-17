@@ -1,13 +1,12 @@
 import bcrypt from "bcryptjs";
 import type { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
-import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
-import { loginErrors } from "../../../utils/unifiedErrors.js";
+import { loginErrors, registerErrors } from "../../../utils/unifiedErrors.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -15,12 +14,16 @@ const {
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { conflictCode },
-  serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
 const { userNotFoundError, incorrectPasswordError, inactiveUserError } =
   loginErrors;
+const {
+  duplicateKeyError,
+  registerGeneralError,
+  alreadyRegisteredError,
+  invalidPasswordError,
+} = registerErrors;
 
 export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
@@ -37,23 +40,21 @@ export const registerUser = async (
 
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
   } catch (error: unknown) {
-    if ((error as Error).message.includes("duplicate key")) {
-      const customErrorDuplicateKey = new CustomError(
-        (error as Error).message,
-        conflictCode,
-        "User already exists"
-      );
-      next(customErrorDuplicateKey);
-      return;
+    switch (error) {
+      case (error as Error).message.includes("Duplicate key"):
+        next(duplicateKeyError);
+        break;
+      case (error as Error).message.includes("Existing user"):
+        next(alreadyRegisteredError);
+        break;
+      case (error as Error).message.includes("Password invalid"):
+        next(invalidPasswordError);
+        break;
+
+      default:
+        next(registerGeneralError);
+        break;
     }
-
-    const customError = new CustomError(
-      (error as Error).message,
-      internalServerErrorCode,
-      "Error creating a new user"
-    );
-
-    next(customError);
   }
 };
 
