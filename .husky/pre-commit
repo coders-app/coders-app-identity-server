@@ -41,4 +41,3 @@ echo -e "${green}Git pre-commit hook was successful!${no_color}\n"
 exec >/dev/tty 2>&1
 
 npx lint-staged
-
