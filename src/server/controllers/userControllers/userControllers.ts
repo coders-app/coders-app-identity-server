@@ -139,7 +139,7 @@ export const activateUser = async (
     if (!user) {
       throw new CustomError(
         "Invalid activation key",
-        401,
+        unauthorizedCode,
         "Invalid activation key"
       );
     }
@@ -151,7 +151,7 @@ export const activateUser = async (
 
     await user.save();
 
-    res.status(200).json({ message: "User account has been activated" });
+    res.status(okCode).json({ message: "User account has been activated" });
   } catch (error: unknown) {
     next(error);
   }
