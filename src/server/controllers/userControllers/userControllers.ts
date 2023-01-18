@@ -7,6 +7,8 @@ import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type { UserCredentials, UserData } from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
+import sendEmail from "../../email/sendEmail/sendEmail.js";
+import createRegisterEmail from "../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {
@@ -32,6 +34,24 @@ export const registerUser = async (
     const newUser = await User.create({
       name,
       email,
+    });
+
+    const activationToken = JSON.stringify({
+      id: newUser._id.toString(),
+    });
+
+    const activationKey = await bcrypt.hash(activationToken, 10);
+
+    newUser.activationKey = activationKey;
+
+    await newUser.save();
+
+    const { text, subject } = createRegisterEmail(name, activationKey);
+
+    await sendEmail({
+      to: email,
+      text,
+      subject,
     });
 
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
