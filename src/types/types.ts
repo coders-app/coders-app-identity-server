@@ -5,6 +5,11 @@ export interface UserCredentials {
   password: string;
 }
 
+export interface UserActivationCredentials
+  extends Pick<UserCredentials, "password"> {
+  confirmPassword: string;
+}
+
 export interface UserData extends Omit<UserCredentials, "password"> {
   name: string;
 }
@@ -14,6 +19,7 @@ export interface UserStructure
     Pick<UserCredentials, "password"> {
   isAdmin: boolean;
   isActive: boolean;
+  activationKey: string;
 }
 
 export interface UserWithId extends UserStructure {
