@@ -214,4 +214,34 @@ describe("Given an activateUser function", () => {
       });
     });
   });
+
+  describe("When it receives query string activationKey 'invalid-key', in the body password and confirmPassword 'test-password' and the activationKey is invalid", () => {
+    test("Then it should invoke next with message 'Invalid activation key' and status 401", async () => {
+      const activationKey = "invalid-key";
+      const invalidKeyErrorMessage = "Invalid activation key";
+      const invalidKeyError = new CustomError(
+        invalidKeyErrorMessage,
+        unauthorizedCode,
+        invalidKeyErrorMessage
+      );
+
+      req.query = {
+        activationKey,
+      };
+
+      const user = getMockUserCredentials();
+      const { password } = user;
+
+      req.body = {
+        password,
+        confirmPassword: password,
+      };
+
+      User.findOne = jest.fn().mockResolvedValueOnce(null);
+
+      await activateUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(invalidKeyError);
+    });
+  });
 });
