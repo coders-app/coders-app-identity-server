@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import { loginUser, registerUser } from "./userControllers.js";
+import { activateUser, loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import { getMockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
@@ -180,6 +180,38 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, null, next);
 
       expect(next).toHaveBeenCalledWith(bcryptError);
+    });
+  });
+});
+
+describe("Given an activateUser function", () => {
+  describe("When it receives a request with query string activationKey 'test-activation-key' and body password and confirmPassword 'test-password' and the activationKey is valid", () => {
+    test("Then it invoke response's method status with 200 and json with the message 'User account has been activated'", async () => {
+      const activationKey = "test-activation-key";
+
+      req.query = {
+        activationKey,
+      };
+
+      const user = getMockUserCredentials();
+      const { password } = user;
+
+      req.body = {
+        password,
+        confirmPassword: password,
+      };
+
+      User.findOne = jest
+        .fn()
+        .mockResolvedValueOnce({ ...user, activationKey, save: jest.fn() });
+      bcrypt.hash = jest.fn().mockResolvedValueOnce(password);
+
+      await activateUser(req as Request, res as Response, null);
+
+      expect(res.status).toHaveBeenCalledWith(okCode);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "User account has been activated",
+      });
     });
   });
 });
