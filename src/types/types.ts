@@ -19,6 +19,7 @@ export interface UserStructure
     Pick<UserCredentials, "password"> {
   isAdmin: boolean;
   isActive: boolean;
+  activationKey: string;
 }
 
 export interface UserWithId extends UserStructure {

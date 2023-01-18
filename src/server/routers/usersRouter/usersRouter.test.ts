@@ -18,6 +18,9 @@ import type { UserData, UserStructure } from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";
+
+jest.mock("../../email/sendEmail/sendEmail.js");
+
 const { users, register, login } = paths;
 
 const {
