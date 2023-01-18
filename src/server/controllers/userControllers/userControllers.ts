@@ -5,7 +5,11 @@ import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
-import type { UserCredentials, UserData } from "../../../types/types.js";
+import type {
+  UserActivationCredentials,
+  UserCredentials,
+  UserData,
+} from "../../../types/types.js";
 import type { CustomTokenPayload } from "./types.js";
 import sendEmail from "../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../email/emailTemplates/createRegisterEmail.js";
@@ -131,6 +135,43 @@ export const loginUser = async (
         maxAge: cookieMaxAge,
       })
       .json({ message: `${cookieName} has been set` });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const activateUser = async (
+  req: Request<
+    Record<string, unknown>,
+    Record<string, unknown>,
+    UserActivationCredentials
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  const { activationKey } = req.query;
+
+  const { password } = req.body;
+
+  try {
+    const user = await User.findOne({ activationKey });
+
+    if (!user) {
+      throw new CustomError(
+        "Invalid activation key",
+        unauthorizedCode,
+        "Invalid activation key"
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+    user.isActive = true;
+
+    await user.save();
+
+    res.status(okCode).json({ message: "User account has been activated" });
   } catch (error: unknown) {
     next(error);
   }
