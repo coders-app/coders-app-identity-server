@@ -43,6 +43,7 @@
     "lint-staged": "^13.1.0",
     "mongodb-memory-server": "^8.10.2",
     "nodemon": "^2.0.20",
+    "prettier": "^2.8.3",
     "supertest": "^6.3.3",
     "swagger-ui-express": "^4.6.0",
     "ts-jest": "^29.0.3",
