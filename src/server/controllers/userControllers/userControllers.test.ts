@@ -13,7 +13,7 @@ import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
-jest.mock("../../email/sendEmail/sendEmail.js");
+jest.mock("../../../email/sendEmail/sendEmail.js");
 
 const {
   successCodes: { createdCode, okCode },

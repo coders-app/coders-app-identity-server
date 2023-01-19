@@ -1,10 +1,10 @@
-import { getRandomEmailOptions } from "../../../factories/emailOptionsFactory.js";
+import { getRandomEmailOptions } from "../../factories/emailOptionsFactory.js";
 import sendEmail from "./sendEmail.js";
 import transporter from "../transporter.js";
 import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
-import smtpStatusCodes from "../../../utils/smtpStatusCodes.js";
-import type { EmailOptions } from "../../../types/types.js";
-import { environment } from "../../../loadEnvironments.js";
+import smtpStatusCodes from "../../utils/smtpStatusCodes.js";
+import type { EmailOptions } from "../../types/types.js";
+import { environment } from "../../loadEnvironments.js";
 
 const {
   smtp: { emailSender },
