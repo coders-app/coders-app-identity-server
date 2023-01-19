@@ -1,4 +1,4 @@
-import { luisName } from "../../../testUtils/mocks/mockUsers";
+import { luisName } from "../../testUtils/mocks/mockUsers";
 import createRegisterEmail from "./createRegisterEmail";
 
 describe("Given the function createRegisterEmail", () => {
