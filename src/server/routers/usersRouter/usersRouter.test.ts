@@ -214,6 +214,11 @@ describe("Given a POST /users/login endpoint", () => {
 
 describe("Given a POST /users/activate endpoint", () => {
   const activationKey = "test-activation-key";
+  const luisitoPassword = "luisito123";
+  const activationBody = {
+    password: luisitoPassword,
+    confirmPassword: luisitoPassword,
+  };
 
   beforeEach(async () => {
     const luisitoData = getMockUserData({ email: luisEmail });
@@ -223,12 +228,14 @@ describe("Given a POST /users/activate endpoint", () => {
     });
   });
 
-  describe("When it receives query string activationKey 'test-activation-key' and password & confirmPassword 'luisito123'", () => {
-    test("Then it should respond with status 200", async () => {
-      const luisitoPassword = "luisito123";
-      const activationBody = {
-        password: luisitoPassword,
-        confirmPassword: luisitoPassword,
+  afterEach(async () => {
+    await User.deleteMany();
+  });
+
+  describe("When it receives query string activationKey 'test-activation-key' and password & confirmPassword 'luisito123' and the activation key is correct", () => {
+    test("Then it should respond with status 200 and message 'User account has been activated'", async () => {
+      const expectedMessage = {
+        message: "User account has been activated",
       };
 
       const response = await request(app)
@@ -236,9 +243,23 @@ describe("Given a POST /users/activate endpoint", () => {
         .send(activationBody)
         .expect(okCode);
 
-      expect(response.body).toStrictEqual({
-        message: "User account has been activated",
-      });
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey 'invalid-key'", () => {
+    test("Then it should respond with status 401 'Invalid activation key'", async () => {
+      const invalidActivationKey = "invalid-key";
+      const expectedMessage = {
+        error: "Invalid activation key",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${invalidActivationKey}`)
+        .send(activationBody)
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
     });
   });
 });
