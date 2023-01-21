@@ -21,7 +21,7 @@ import cookieParser from "../../../testUtils/cookieParser";
 
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
-const { users, register, login } = paths;
+const { users, register, login, activate } = paths;
 
 const {
   successCodes: { createdCode, okCode },
@@ -130,6 +130,10 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
+  afterAll(async () => {
+    await User.deleteMany();
+  });
+
   describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
       const { email, password, name } = luisitoUser;
@@ -204,6 +208,58 @@ describe("Given a POST /users/login endpoint", () => {
         .expect(badRequestCode);
 
       expect(response.body).toStrictEqual(expectedErrors);
+    });
+  });
+});
+
+describe("Given a POST /users/activate endpoint", () => {
+  const activationKey = "test-activation-key";
+  const luisitoPassword = "luisito123";
+  const activationBody = {
+    password: luisitoPassword,
+    confirmPassword: luisitoPassword,
+  };
+
+  beforeEach(async () => {
+    const luisitoData = getMockUserData({ email: luisEmail });
+    await User.create({
+      ...luisitoData,
+      activationKey,
+    });
+  });
+
+  afterEach(async () => {
+    await User.deleteMany();
+  });
+
+  describe("When it receives query string activationKey 'test-activation-key' and password & confirmPassword 'luisito123' and the activation key is correct", () => {
+    test("Then it should respond with status 200 and message 'User account has been activated'", async () => {
+      const expectedMessage = {
+        message: "User account has been activated",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${activationKey}`)
+        .send(activationBody)
+        .expect(okCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey 'invalid-key'", () => {
+    test("Then it should respond with status 401 'Invalid activation key'", async () => {
+      const invalidActivationKey = "invalid-key";
+      const expectedMessage = {
+        error: "Invalid activation key",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${invalidActivationKey}`)
+        .send(activationBody)
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
     });
   });
 });

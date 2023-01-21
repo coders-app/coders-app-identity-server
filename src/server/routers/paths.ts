@@ -5,6 +5,7 @@ const paths = {
   users: "/users",
   login: "/login",
   verifyToken: "/verify-token",
+  activate: "/activate",
 };
 
 export default paths;
