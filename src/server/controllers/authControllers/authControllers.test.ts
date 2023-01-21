@@ -2,7 +2,7 @@ import type { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError";
 import {
-  getMockToken,
+  mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
@@ -24,7 +24,6 @@ const next: NextFunction = jest.fn();
 beforeEach(() => jest.clearAllMocks());
 
 describe("Given the auth controller", () => {
-  const mockToken = getMockToken();
   const mockAuthorizationHeader = `Bearer ${mockToken}`;
 
   describe("When it receives a request with no auth header", () => {

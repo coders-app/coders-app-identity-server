@@ -13,4 +13,4 @@ export const mockTokenPayload: CustomTokenPayload = {
   id: new mongoose.Types.ObjectId().toString(),
 };
 
-export const getMockToken = () => jwt.sign(mockTokenPayload, jwtSecret);
+export const mockToken = jwt.sign(mockTokenPayload, jwtSecret);
