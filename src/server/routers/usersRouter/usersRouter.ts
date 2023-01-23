@@ -8,6 +8,8 @@ import {
 import registerUserSchema from "../../schemas/registerUserSchema.js";
 import paths from "../paths.js";
 import loginUserSchema from "../../schemas/loginUserSchema.js";
+import activateUserSchema from "../../schemas/activateUserSchema.js";
+import { noAbortEarly } from "../../schemas/validateOptions.js";
 
 const { register, login, activate } = paths;
 
@@ -16,16 +18,16 @@ const usersRouter = Router();
 
 usersRouter.post(
   register,
-  validate(registerUserSchema, {}, { abortEarly: false }),
+  validate(registerUserSchema, {}, noAbortEarly),
   registerUser
 );
 
-usersRouter.post(
-  login,
-  validate(loginUserSchema, {}, { abortEarly: false }),
-  loginUser
-);
+usersRouter.post(login, validate(loginUserSchema, {}, noAbortEarly), loginUser);
 
-usersRouter.post(activate, activateUser);
+usersRouter.post(
+  activate,
+  validate(activateUserSchema, {}, noAbortEarly),
+  activateUser
+);
 
 export default usersRouter;

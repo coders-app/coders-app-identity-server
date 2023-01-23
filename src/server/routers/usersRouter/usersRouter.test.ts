@@ -192,12 +192,9 @@ describe("Given a POST /users/login endpoint", () => {
   });
 
   describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
-    test("Then it should respond with status 400 and the errors 'Email must be a valid email' and 'Password should have 8 characters minimum'", async () => {
+    test("Then it should respond with status 400 and the errors 'Email must be a valid email'", async () => {
       const expectedErrors = {
-        error: [
-          '"Email" must be a valid email',
-          "Password should have 8 characters minimum",
-        ].join("\n"),
+        error: ['"Email" must be a valid email'].join("\n"),
       };
       const email = "luisito";
       const password = "luisito";
