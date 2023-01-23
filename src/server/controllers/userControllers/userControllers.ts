@@ -14,6 +14,7 @@ import type { CustomTokenPayload } from "./types.js";
 import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import mongoose from "mongoose";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -147,12 +148,20 @@ export const activateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { activationKey } = req.query;
+  const { activationKey: userId } = req.query;
 
   const { password } = req.body;
 
   try {
-    const user = await User.findOne({ _id: activationKey });
+    if (!mongoose.Types.ObjectId.isValid(userId as string)) {
+      throw new CustomError(
+        "Invalid activation key",
+        unauthorizedCode,
+        "Invalid activation key"
+      );
+    }
+
+    const user = await User.findById(userId);
 
     if (!user) {
       throw new CustomError(
@@ -162,7 +171,7 @@ export const activateUser = async (
       );
     }
 
-    if (!(await bcrypt.compare(activationKey as string, user.activationKey))) {
+    if (!(await bcrypt.compare(userId as string, user.activationKey))) {
       throw new CustomError(
         "Invalid activation key",
         unauthorizedCode,
