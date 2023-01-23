@@ -153,30 +153,25 @@ export const activateUser = async (
   const { password } = req.body;
 
   try {
+    const invalidActivationKeyMessage = "Invalid activation key";
+    const invalidActivationKeyError = new CustomError(
+      invalidActivationKeyMessage,
+      unauthorizedCode,
+      invalidActivationKeyMessage
+    );
+
     if (!mongoose.Types.ObjectId.isValid(userId as string)) {
-      throw new CustomError(
-        "Invalid activation key",
-        unauthorizedCode,
-        "Invalid activation key"
-      );
+      throw invalidActivationKeyError;
     }
 
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new CustomError(
-        "Invalid activation key",
-        unauthorizedCode,
-        "Invalid activation key"
-      );
+      throw invalidActivationKeyError;
     }
 
     if (!(await bcrypt.compare(userId as string, user.activationKey))) {
-      throw new CustomError(
-        "Invalid activation key",
-        unauthorizedCode,
-        "Invalid activation key"
-      );
+      throw invalidActivationKeyError;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
