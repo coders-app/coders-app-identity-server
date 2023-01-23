@@ -170,7 +170,10 @@ export const activateUser = async (
       throw invalidActivationKeyError;
     }
 
-    if (!(await bcrypt.compare(userId as string, user.activationKey))) {
+    if (
+      !user.activationKey ||
+      !(await bcrypt.compare(userId as string, user.activationKey))
+    ) {
       throw invalidActivationKeyError;
     }
 

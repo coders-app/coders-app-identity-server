@@ -266,4 +266,37 @@ describe("Given a POST /users/activate endpoint", () => {
       expect(response.body).toStrictEqual(expectedMessage);
     });
   });
+
+  describe("When it receives query string activationKey with correct ID but the stored hash has expired", () => {
+    const martitaPassword = "martita123";
+    let martitaId: string;
+    const activationBody = {
+      password: martitaPassword,
+      confirmPassword: martitaPassword,
+    };
+
+    beforeEach(async () => {
+      const martitaData = getMockUserData({ email: martaEmail });
+      const martitaUser = await User.create({
+        ...martitaData,
+      });
+
+      martitaId = martitaUser._id.toString();
+
+      await martitaUser.save();
+    });
+
+    test("Then it should respond with status 401 and message 'Invalid activation key'", async () => {
+      const expectedMessage = {
+        error: "Invalid activation key",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${martitaId}`)
+        .send(activationBody)
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
 });
