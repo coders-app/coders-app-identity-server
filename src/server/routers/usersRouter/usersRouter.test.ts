@@ -213,8 +213,8 @@ describe("Given a POST /users/login endpoint", () => {
 });
 
 describe("Given a POST /users/activate endpoint", () => {
-  const activationKey = "test-activation-key";
   const luisitoPassword = "luisito123";
+  let luisitoId: string;
   const activationBody = {
     password: luisitoPassword,
     confirmPassword: luisitoPassword,
@@ -222,24 +222,28 @@ describe("Given a POST /users/activate endpoint", () => {
 
   beforeEach(async () => {
     const luisitoData = getMockUserData({ email: luisEmail });
-    await User.create({
+    const luisitoUser = await User.create({
       ...luisitoData,
-      activationKey,
     });
+
+    luisitoId = luisitoUser._id.toString();
+    luisitoUser.activationKey = await bcrypt.hash(luisitoId, 10);
+
+    await luisitoUser.save();
   });
 
   afterEach(async () => {
     await User.deleteMany();
   });
 
-  describe("When it receives query string activationKey 'test-activation-key' and password & confirmPassword 'luisito123' and the activation key is correct", () => {
+  describe("When it receives query string activationKey and password & confirmPassword 'luisito123' and the activation key is correct", () => {
     test("Then it should respond with status 200 and message 'User account has been activated'", async () => {
       const expectedMessage = {
         message: "User account has been activated",
       };
 
       const response = await request(app)
-        .post(`${users}${activate}?activationKey=${activationKey}`)
+        .post(`${users}${activate}?activationKey=${luisitoId}`)
         .send(activationBody)
         .expect(okCode);
 
@@ -247,9 +251,9 @@ describe("Given a POST /users/activate endpoint", () => {
     });
   });
 
-  describe("When it receives query string activationKey 'invalid-key'", () => {
+  describe("When it receives query string activationKey and it is invalid", () => {
     test("Then it should respond with status 401 'Invalid activation key'", async () => {
-      const invalidActivationKey = "invalid-key";
+      const invalidActivationKey = new mongoose.Types.ObjectId().toString();
       const expectedMessage = {
         error: "Invalid activation key",
       };
