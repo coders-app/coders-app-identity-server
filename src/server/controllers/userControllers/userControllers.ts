@@ -152,9 +152,17 @@ export const activateUser = async (
   const { password } = req.body;
 
   try {
-    const user = await User.findOne({ activationKey });
+    const user = await User.findOne({ _id: activationKey });
 
     if (!user) {
+      throw new CustomError(
+        "Invalid activation key",
+        unauthorizedCode,
+        "Invalid activation key"
+      );
+    }
+
+    if (!(await bcrypt.compare(activationKey as string, user.activationKey))) {
       throw new CustomError(
         "Invalid activation key",
         unauthorizedCode,
