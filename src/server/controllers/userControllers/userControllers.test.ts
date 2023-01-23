@@ -12,6 +12,7 @@ import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import mongoose from "mongoose";
 
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
@@ -190,9 +191,9 @@ describe("Given a loginUser controller", () => {
 });
 
 describe("Given an activateUser function", () => {
-  describe("When it receives a request with query string activationKey 'test-activation-key' and body password and confirmPassword 'test-password' and the activationKey is valid", () => {
+  describe("When it receives a request with query string activationKey and body password and confirmPassword 'test-password' and the activationKey is valid", () => {
     test("Then it invoke response's method status with 200 and json with the message 'User account has been activated'", async () => {
-      const activationKey = "test-activation-key";
+      const activationKey = new mongoose.Types.ObjectId().toString();
 
       req.query = {
         activationKey,
@@ -206,9 +207,10 @@ describe("Given an activateUser function", () => {
         confirmPassword: password,
       };
 
-      User.findOne = jest
+      User.findById = jest
         .fn()
         .mockResolvedValueOnce({ ...user, activationKey, save: jest.fn() });
+      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
       bcrypt.hash = jest.fn().mockResolvedValueOnce(password);
 
       await activateUser(req as Request, res as Response, null);
@@ -242,7 +244,7 @@ describe("Given an activateUser function", () => {
         confirmPassword: password,
       };
 
-      User.findOne = jest.fn().mockResolvedValueOnce(null);
+      User.findById = jest.fn().mockResolvedValueOnce(null);
 
       await activateUser(req as Request, null, next);
 

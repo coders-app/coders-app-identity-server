@@ -14,6 +14,7 @@ import type { CustomTokenPayload } from "./types.js";
 import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import mongoose from "mongoose";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -40,17 +41,15 @@ export const registerUser = async (
       email,
     });
 
-    const activationToken = JSON.stringify({
-      id: newUser._id.toString(),
-    });
+    const userId = newUser._id.toString();
 
-    const activationKey = await bcrypt.hash(activationToken, 10);
+    const activationKey = await bcrypt.hash(userId, 10);
 
     newUser.activationKey = activationKey;
 
     await newUser.save();
 
-    const { text, subject } = createRegisterEmail(name, activationKey);
+    const { text, subject } = createRegisterEmail(name, userId);
 
     await sendEmail({
       to: email,
@@ -149,19 +148,33 @@ export const activateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { activationKey } = req.query;
+  const { activationKey: userId } = req.query;
 
   const { password } = req.body;
 
   try {
-    const user = await User.findOne({ activationKey });
+    const invalidActivationKeyMessage = "Invalid activation key";
+    const invalidActivationKeyError = new CustomError(
+      invalidActivationKeyMessage,
+      unauthorizedCode,
+      invalidActivationKeyMessage
+    );
+
+    if (!mongoose.Types.ObjectId.isValid(userId as string)) {
+      throw invalidActivationKeyError;
+    }
+
+    const user = await User.findById(userId);
 
     if (!user) {
-      throw new CustomError(
-        "Invalid activation key",
-        unauthorizedCode,
-        "Invalid activation key"
-      );
+      throw invalidActivationKeyError;
+    }
+
+    if (
+      !user.activationKey ||
+      !(await bcrypt.compare(userId as string, user.activationKey))
+    ) {
+      throw invalidActivationKeyError;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
