@@ -14,7 +14,11 @@ import {
   luisName,
   martaEmail,
 } from "../../../testUtils/mocks/mockUsers";
-import type { UserData, UserStructure } from "../../../types/types";
+import type {
+  UserActivationCredentials,
+  UserData,
+  UserStructure,
+} from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";
@@ -255,6 +259,24 @@ describe("Given a POST /users/activate endpoint", () => {
         .post(`${users}${activate}?activationKey=${invalidActivationKey}`)
         .send(activationBody)
         .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey, and in the body password 'luisito123' and confirmPassword 'luisito1234'", () => {
+    test("Then it should respond with status 400 and message 'Passwords must match'", async () => {
+      const activationKey = new mongoose.Types.ObjectId().toString();
+      const expectedMessage = { error: "Passwords must match" };
+      const activationBody: UserActivationCredentials = {
+        password: "luisito123",
+        confirmPassword: "luisito1234",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${activationKey}`)
+        .send(activationBody)
+        .expect(badRequestCode);
 
       expect(response.body).toStrictEqual(expectedMessage);
     });
