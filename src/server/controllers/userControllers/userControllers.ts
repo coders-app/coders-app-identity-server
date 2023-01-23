@@ -40,17 +40,15 @@ export const registerUser = async (
       email,
     });
 
-    const activationToken = JSON.stringify({
-      id: newUser._id.toString(),
-    });
+    const userId = newUser._id.toString();
 
-    const activationKey = await bcrypt.hash(activationToken, 10);
+    const activationKey = await bcrypt.hash(userId, 10);
 
     newUser.activationKey = activationKey;
 
     await newUser.save();
 
-    const { text, subject } = createRegisterEmail(name, activationKey);
+    const { text, subject } = createRegisterEmail(name, userId);
 
     await sendEmail({
       to: email,
