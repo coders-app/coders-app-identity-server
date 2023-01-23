@@ -15,7 +15,7 @@ const sendEmail = async ({
   to,
   text,
   subject,
-  ...rest
+  ...emailOptions
 }: EmailOptions): Promise<SMTPTransport.SentMessageInfo | Error> =>
   new Promise((resolve, reject) => {
     transporter.sendMail(
@@ -24,7 +24,7 @@ const sendEmail = async ({
         to,
         subject,
         text,
-        ...rest,
+        ...emailOptions,
       },
 
       (err, info) => {
