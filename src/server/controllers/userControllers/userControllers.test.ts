@@ -4,7 +4,6 @@ import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { loginUser, registerUser } from "./userControllers.js";
-import CustomError from "../../../CustomError/CustomError.js";
 import { getMockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
 import type { UserWithId } from "../../../types/types.js";
@@ -12,13 +11,14 @@ import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
-import { registerErrors } from "../../../utils/unifiedErrors.js";
+import { loginErrors, registerErrors } from "../../../utils/unifiedErrors.js";
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 const { duplicateKeyError } = registerErrors;
+const { userNotFoundError, incorrectPasswordError, inactiveUserError } =
+  loginErrors;
 
 const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
@@ -72,7 +72,6 @@ describe("Given a registerUser Controller", () => {
 });
 
 describe("Given a loginUser controller", () => {
-  const incorrectCredentialsMessage = "Incorrect email or password";
   const userCredentials = getMockUserCredentials({ email: luisEmail });
   const mockToken = getMockToken();
 
@@ -81,12 +80,6 @@ describe("Given a loginUser controller", () => {
       req.body = userCredentials;
 
       User.findOne = jest.fn().mockResolvedValueOnce(null);
-
-      const userNotFoundError = new CustomError(
-        "User not found",
-        unauthorizedCode,
-        incorrectCredentialsMessage
-      );
 
       await loginUser(req as Request, null, next);
 
@@ -105,13 +98,6 @@ describe("Given a loginUser controller", () => {
 
       User.findOne = jest.fn().mockResolvedValueOnce(incorrectUserCredentials);
       bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
-
-      const incorrectPasswordError = new CustomError(
-        "Incorrect password",
-        unauthorizedCode,
-        incorrectCredentialsMessage
-      );
-
       await loginUser(req as Request, null, next);
 
       expect(next).toHaveBeenCalledWith(incorrectPasswordError);
@@ -147,12 +133,6 @@ describe("Given a loginUser controller", () => {
     test("Then it should invoke next with message 'User is inactive', status 401 and public message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       req.body = userCredentials;
       const existingUser = getMockUser(userCredentials);
-
-      const inactiveUserError = new CustomError(
-        "User is inactive",
-        unauthorizedCode,
-        "User is inactive, contact your administrator if you think this is a mistake"
-      );
 
       User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
