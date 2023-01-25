@@ -12,11 +12,13 @@ import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import { registerErrors } from "../../../utils/unifiedErrors.js";
 
 const {
   successCodes: { createdCode, okCode },
-  clientErrors: { unauthorizedCode, conflictCode },
+  clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
+const { duplicateKeyError } = registerErrors;
 
 const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
@@ -61,16 +63,10 @@ describe("Given a registerUser Controller", () => {
 
   describe("When it receives a request with a user name that already exist", () => {
     test("Then it should call next with an error message 'User already exists'", async () => {
-      const customErrorDuplicateKey = new CustomError(
-        "duplicate key",
-        conflictCode,
-        "User already exists"
-      );
-
-      User.create = jest.fn().mockRejectedValue(customErrorDuplicateKey);
+      User.create = jest.fn().mockRejectedValue(duplicateKeyError);
       await registerUser(req as Request, res as Response, next as NextFunction);
 
-      expect(next).toHaveBeenCalledWith(customErrorDuplicateKey);
+      expect(next).toHaveBeenCalledWith(duplicateKeyError);
     });
   });
 });
