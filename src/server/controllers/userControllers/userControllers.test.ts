@@ -62,7 +62,7 @@ describe("Given a registerUser Controller", () => {
   describe("When it receives a request with a user name that already exist", () => {
     test("Then it should call next with an error message 'User already exists'", async () => {
       const customErrorDuplicateKey = new CustomError(
-        "Duplicate key",
+        "duplicate key",
         conflictCode,
         "User already exists"
       );
