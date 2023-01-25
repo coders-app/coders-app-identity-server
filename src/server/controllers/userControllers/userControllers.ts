@@ -42,21 +42,13 @@ export const registerUser = async (
 
     res.status(createdCode).json({ user: { id: newUser._id, name, email } });
   } catch (error: unknown) {
-    switch (error) {
-      case (error as Error).message.includes("Duplicate key"):
-        next(duplicateKeyError);
-        break;
-      case (error as Error).message.includes("Existing user"):
-        next(alreadyRegisteredError);
-        break;
-      case (error as Error).message.includes("Password invalid"):
-        next(invalidPasswordError);
-        break;
+    const errorMessage = (error as Error).message;
+    if (errorMessage.includes("Duplicate key")) next(duplicateKeyError);
+    if (errorMessage.includes("User already exists"))
+      next(alreadyRegisteredError);
+    if (errorMessage.includes("Password invalid")) next(invalidPasswordError);
 
-      default:
-        next(registerGeneralError);
-        break;
-    }
+    next(registerGeneralError);
   }
 };
 
