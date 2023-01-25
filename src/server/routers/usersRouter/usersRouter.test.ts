@@ -101,7 +101,9 @@ describe("Given a POST /users/register endpoint", () => {
 });
 
 describe("Given a POST /users/login endpoint", () => {
-  const wrongCredentialsError = { error: "Incorrect email or password" };
+  const wrongCredentialsError = {
+    error: "your email or password is incorrect, please try again",
+  };
 
   const luisitoUser = getMockUser({ email: luisEmail });
   let luisitoId: mongoose.Types.ObjectId;
