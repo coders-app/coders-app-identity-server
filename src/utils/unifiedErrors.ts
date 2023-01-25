@@ -1,5 +1,5 @@
-import CustomError from "../CustomError/CustomError";
-import httpStatusCodes from "./httpStatusCodes";
+import CustomError from "../CustomError/CustomError.js";
+import httpStatusCodes from "./httpStatusCodes.js";
 
 const {
   clientErrors: { conflictCode, unauthorizedCode },
@@ -26,7 +26,7 @@ export const loginErrors = {
 };
 export const registerErrors = {
   duplicateKeyError: new CustomError(
-    "Duplicate key",
+    "duplicate key",
     conflictCode,
     "User already exists"
   ),
@@ -36,7 +36,7 @@ export const registerErrors = {
     "Error creating a new user"
   ),
   alreadyRegisteredError: new CustomError(
-    "Existing user",
+    "User already exists",
     conflictCode,
     "That username is taken"
   ),
