@@ -58,3 +58,10 @@ export const userAuthenticationErrors = {
     "Missing Bearer in token"
   ),
 };
+export const activateUserErrors = {
+  invalidActivationKeyError: new CustomError(
+    "Invalid activation key",
+    unauthorizedCode,
+    "Invalid activation key"
+  ),
+};

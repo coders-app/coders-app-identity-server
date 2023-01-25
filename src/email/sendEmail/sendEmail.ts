@@ -1,4 +1,4 @@
-import transporter from "./transporter.js";
+import transporter from "../transporter.js";
 import debugConfig from "debug";
 import chalk from "chalk";
 import { environment } from "../../loadEnvironments.js";
@@ -15,7 +15,7 @@ const sendEmail = async ({
   to,
   text,
   subject,
-  ...rest
+  ...emailOptions
 }: EmailOptions): Promise<SMTPTransport.SentMessageInfo | Error> =>
   new Promise((resolve, reject) => {
     transporter.sendMail(
@@ -24,18 +24,20 @@ const sendEmail = async ({
         to,
         subject,
         text,
-        ...rest,
+        ...emailOptions,
       },
 
-      (err, info) => {
-        if (err) {
-          debug(chalk.red.bold(`Problem sending email: ${err.message}`));
+      (error, information) => {
+        if (error) {
+          debug(chalk.red.bold(`Problem sending email: ${error.message}`));
 
-          reject(err);
+          reject(error);
         }
 
-        debug(chalk.green.bold(`Email sent successfully: ${info.response}`));
-        resolve(info);
+        debug(
+          chalk.green.bold(`Email sent successfully: ${information.response}`)
+        );
+        resolve(information);
       }
     );
   });

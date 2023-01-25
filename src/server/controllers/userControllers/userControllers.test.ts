@@ -3,15 +3,22 @@ import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import { loginUser, registerUser } from "./userControllers.js";
-import { getMockToken } from "../../../testUtils/mocks/mockToken.js";
+import { activateUser, loginUser, registerUser } from "./userControllers.js";
+import { mockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
 import type { UserWithId } from "../../../types/types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
-import { loginErrors, registerErrors } from "../../../utils/unifiedErrors.js";
+import mongoose from "mongoose";
+
+jest.mock("../../../email/sendEmail/sendEmail.js");
+import {
+  activateUserErrors,
+  loginErrors,
+  registerErrors,
+} from "../../../utils/unifiedErrors.js";
 
 const {
   successCodes: { createdCode, okCode },
@@ -19,6 +26,7 @@ const {
 const { duplicateKeyError } = registerErrors;
 const { userNotFoundError, incorrectPasswordError, inactiveUserError } =
   loginErrors;
+const { invalidActivationKeyError } = activateUserErrors;
 
 const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
@@ -40,13 +48,17 @@ describe("Given a registerUser Controller", () => {
   const registerUserBody = getMockUserData({ email: luisEmail });
 
   describe("When it receives a request with a user data with email: 'luisito@isdicoders.com'", () => {
-    test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com'", async () => {
+    test("Then it should call the response method status with a 201, and method json with a user with email 'luisito@isdicoders.com", async () => {
       const userCreatedMock: UserWithId = getMockUser(registerUserBody);
       const expectedStatus = createdCode;
 
       req.body = registerUserBody;
 
-      User.create = jest.fn().mockResolvedValueOnce(userCreatedMock);
+      User.create = jest
+        .fn()
+        .mockReturnValueOnce({ ...userCreatedMock, save: jest.fn() });
+
+      bcrypt.hash = jest.fn().mockResolvedValueOnce("mock activation key");
 
       await registerUser(req as Request, res as Response, next as NextFunction);
 
@@ -73,7 +85,6 @@ describe("Given a registerUser Controller", () => {
 
 describe("Given a loginUser controller", () => {
   const userCredentials = getMockUserCredentials({ email: luisEmail });
-  const mockToken = getMockToken();
 
   describe("When it receives a request with email 'luisito@isdicoders.com' and the user doesn't exist, and a next function", () => {
     test("Then next should be invoked with message 'User not found', status 401 and public message 'Incorrect email or password'", async () => {
@@ -156,6 +167,63 @@ describe("Given a loginUser controller", () => {
       await loginUser(req as Request, null, next);
 
       expect(next).toHaveBeenCalledWith(bcryptError);
+    });
+  });
+});
+
+describe("Given an activateUser function", () => {
+  describe("When it receives a request with query string activationKey and body password and confirmPassword 'test-password' and the activationKey is valid", () => {
+    test("Then it invoke response's method status with 200 and json with the message 'User account has been activated'", async () => {
+      const activationKey = new mongoose.Types.ObjectId().toString();
+
+      req.query = {
+        activationKey,
+      };
+
+      const user = getMockUserCredentials();
+      const { password } = user;
+
+      req.body = {
+        password,
+        confirmPassword: password,
+      };
+
+      User.findById = jest
+        .fn()
+        .mockResolvedValueOnce({ ...user, activationKey, save: jest.fn() });
+      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
+      bcrypt.hash = jest.fn().mockResolvedValueOnce(password);
+
+      await activateUser(req as Request, res as Response, null);
+
+      expect(res.status).toHaveBeenCalledWith(okCode);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "User account has been activated",
+      });
+    });
+  });
+
+  describe("When it receives query string activationKey 'invalid-key', in the body password and confirmPassword 'test-password' and the activationKey is invalid", () => {
+    test("Then it should invoke next with message 'Invalid activation key' and status 401", async () => {
+      const activationKey = "invalid-key";
+
+      req.query = {
+        activationKey,
+      };
+
+      const user = getMockUserCredentials();
+      const { password } = user;
+
+      req.body = {
+        password,
+        confirmPassword: password,
+      };
+
+      User.findById = jest.fn().mockResolvedValueOnce(null);
+
+      await activateUser(req as Request, null, next);
+
+      expect(next).toHaveBeenCalledWith(invalidActivationKeyError);
     });
   });
 });

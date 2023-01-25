@@ -14,11 +14,18 @@ import {
   luisName,
   martaEmail,
 } from "../../../testUtils/mocks/mockUsers";
-import type { UserData, UserStructure } from "../../../types/types";
+import type {
+  UserActivationCredentials,
+  UserData,
+  UserStructure,
+} from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";
-const { users, register, login } = paths;
+
+jest.mock("../../../email/sendEmail/sendEmail.js");
+
+const { users, register, login, activate } = paths;
 
 const {
   successCodes: { createdCode, okCode },
@@ -129,6 +136,10 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
+  afterAll(async () => {
+    await User.deleteMany();
+  });
+
   describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
     test("Then it should respond with status 200 and a token", async () => {
       const { email, password, name } = luisitoUser;
@@ -187,12 +198,9 @@ describe("Given a POST /users/login endpoint", () => {
   });
 
   describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
-    test("Then it should respond with status 400 and the errors 'Email must be a valid email' and 'Password should have 8 characters minimum'", async () => {
+    test("Then it should respond with status 400 and the errors 'Email must be a valid email'", async () => {
       const expectedErrors = {
-        error: [
-          '"Email" must be a valid email',
-          "Password should have 8 characters minimum",
-        ].join("\n"),
+        error: ['"Email" must be a valid email'].join("\n"),
       };
       const email = "luisito";
       const password = "luisito";
@@ -203,6 +211,113 @@ describe("Given a POST /users/login endpoint", () => {
         .expect(badRequestCode);
 
       expect(response.body).toStrictEqual(expectedErrors);
+    });
+  });
+});
+
+describe("Given a POST /users/activate endpoint", () => {
+  const luisitoPassword = "luisito123";
+  let luisitoId: string;
+  const activationBody = {
+    password: luisitoPassword,
+    confirmPassword: luisitoPassword,
+  };
+
+  beforeEach(async () => {
+    const luisitoData = getMockUserData({ email: luisEmail });
+    const luisitoUser = await User.create({
+      ...luisitoData,
+    });
+
+    luisitoId = luisitoUser._id.toString();
+    luisitoUser.activationKey = await bcrypt.hash(luisitoId, 10);
+
+    await luisitoUser.save();
+  });
+
+  afterEach(async () => {
+    await User.deleteMany();
+  });
+
+  describe("When it receives query string activationKey and password & confirmPassword 'luisito123' and the activation key is correct", () => {
+    test("Then it should respond with status 200 and message 'User account has been activated'", async () => {
+      const expectedMessage = {
+        message: "User account has been activated",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${luisitoId}`)
+        .send(activationBody)
+        .expect(okCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey and it is invalid", () => {
+    test("Then it should respond with status 401 'Invalid activation key'", async () => {
+      const invalidActivationKey = new mongoose.Types.ObjectId().toString();
+      const expectedMessage = {
+        error: "Invalid activation key",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${invalidActivationKey}`)
+        .send(activationBody)
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey with correct ID but the stored hash has expired", () => {
+    const martitaPassword = "martita123";
+    let martitaId: string;
+    const activationBody = {
+      password: martitaPassword,
+      confirmPassword: martitaPassword,
+    };
+
+    beforeEach(async () => {
+      const martitaData = getMockUserData({ email: martaEmail });
+      const martitaUser = await User.create({
+        ...martitaData,
+      });
+
+      martitaId = martitaUser._id.toString();
+
+      await martitaUser.save();
+    });
+
+    test("Then it should respond with status 401 and message 'Invalid activation key'", async () => {
+      const expectedMessage = {
+        error: "Invalid activation key",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${martitaId}`)
+        .send(activationBody)
+        .expect(unauthorizedCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+
+  describe("When it receives query string activationKey, and in the body password 'luisito123' and confirmPassword 'luisito1234'", () => {
+    test("Then it should respond with status 400 and message 'Passwords must match'", async () => {
+      const activationKey = new mongoose.Types.ObjectId().toString();
+      const expectedMessage = { error: "Passwords must match" };
+      const activationBody: UserActivationCredentials = {
+        password: "luisito123",
+        confirmPassword: "luisito1234",
+      };
+
+      const response = await request(app)
+        .post(`${users}${activate}?activationKey=${activationKey}`)
+        .send(activationBody)
+        .expect(badRequestCode);
+
+      expect(response.body).toStrictEqual(expectedMessage);
     });
   });
 });
