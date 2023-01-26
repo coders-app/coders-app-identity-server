@@ -7,10 +7,13 @@ import {
 } from "../../../testUtils/mocks/mockToken";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
 import userAuthentication from "./authControllers";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie";
 
 const {
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
+
+const { cookieName } = singleSignOnCookie;
 
 const req: Partial<Request> = {};
 
@@ -24,9 +27,15 @@ const next: NextFunction = jest.fn();
 beforeEach(() => jest.clearAllMocks());
 
 describe("Given the auth controller", () => {
-  const mockAuthorizationHeader = `Bearer ${mockToken}`;
+  const cookies = {
+    [cookieName]: mockToken,
+  };
 
-  describe("When it receives a request with no auth header", () => {
+  const incorrectCookies = {
+    [cookieName]: "incorrect token",
+  };
+
+  describe("When it receives a request with no cookie", () => {
     test("Then it should invoke next with an error with status 401 and message 'No Token provided'", () => {
       const expectedErrorMessage = "No Token provided";
       const noTokenError = new CustomError(
@@ -35,7 +44,7 @@ describe("Given the auth controller", () => {
         expectedErrorMessage
       );
 
-      req.header = jest.fn().mockReturnValueOnce(undefined);
+      req.cookies = {};
 
       userAuthentication(req as Request, res as Response, next);
 
@@ -43,24 +52,7 @@ describe("Given the auth controller", () => {
     });
   });
 
-  describe("When it receives a request with an auth header that doesn't start with 'Bearer'", () => {
-    test("Then it should invoke next with an error with status 401 and message 'Missing Bearer in token'", () => {
-      const expectedErrorMessage = "Missing Bearer in token";
-      const noBearerError = new CustomError(
-        expectedErrorMessage,
-        unauthorizedCode,
-        expectedErrorMessage
-      );
-
-      req.header = jest.fn().mockReturnValueOnce("#");
-
-      userAuthentication(req as Request, res as Response, next);
-
-      expect(next).toHaveBeenCalledWith(noBearerError);
-    });
-  });
-
-  describe("When it receives a request with an auth header that has a malformed token", () => {
+  describe("When it receives a request with a cookie that has a malformed token", () => {
     test("Then it should invoke next with a 'jwt malformed' error", () => {
       const jwtError = new Error("jwt malformed");
       const notVerifyTokenError = new CustomError(
@@ -70,7 +62,7 @@ describe("Given the auth controller", () => {
       );
 
       jwt.verify = jest.fn().mockReturnValueOnce(jwtError);
-      req.header = jest.fn().mockReturnValueOnce("Bearer #");
+      req.cookies = incorrectCookies;
 
       userAuthentication(req as Request, res as Response, next);
 
@@ -84,7 +76,7 @@ describe("Given the auth controller", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
+      req.cookies = cookies;
 
       userAuthentication(req as Request, res as Response, next);
 
@@ -96,7 +88,7 @@ describe("Given the auth controller", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
-      req.header = jest.fn().mockReturnValueOnce(mockAuthorizationHeader);
+      req.cookies = cookies;
 
       userAuthentication(req as Request, res as Response, next);
 
