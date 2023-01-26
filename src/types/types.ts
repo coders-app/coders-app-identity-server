@@ -1,5 +1,3 @@
-import type nodemailer from "nodemailer";
-
 export interface UserCredentials {
   email: string;
   password: string;
@@ -29,8 +27,3 @@ export interface UserWithId extends UserStructure {
 export type WithRequiredProperties<T, K extends keyof T> = T & {
   [P in K]-?: T[P];
 };
-
-export type EmailOptions = WithRequiredProperties<
-  nodemailer.SendMailOptions,
-  "to" | "subject" | "text"
->;

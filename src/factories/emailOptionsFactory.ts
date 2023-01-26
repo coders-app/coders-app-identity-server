@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { Factory } from "fishery";
-import type { EmailOptions } from "../types/types";
+import type { EmailOptions } from "../email/types/types";
 
 const emailOptionsFactory = Factory.define<EmailOptions>(() => ({
   to: faker.internet.email(),
