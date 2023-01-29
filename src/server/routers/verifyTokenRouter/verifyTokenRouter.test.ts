@@ -14,7 +14,7 @@ const { verifyToken, users } = paths;
 const { cookieName } = singleSignOnCookie;
 
 const correctCookie = `${cookieName}=${mockToken}`;
-const incorrectCookie = `${cookieName}=incorrect-cookie`;
+const incorrectCookie = `${cookieName}=incorrect-cookasdfie`;
 
 const {
   successCodes: { okCode },
