@@ -40,10 +40,10 @@
       }
     },
     "securitySchemes": {
-      "Bearer Auth": {
+      "Cookie Auth": {
         "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "name": "coders_identity_token",
+        "cookieFormat": "JWT"
       }
     },
     "responses": {
@@ -125,20 +125,18 @@
         "summary": "Verify user token",
         "security": [
           {
-            "Bearer Auth": []
+            "Cookie Auth": []
           }
         ],
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
+            "in": "cookie",
+            "name": "coders_identity_token",
             "required": true,
-            "description": "A valid JWT token must be passed in the 'Authorization' header.",
+            "description": "A valid JWT token must be passed in the 'coders_identity_token' cookie",
             "schema": {
               "type": "string",
-              "example": {
-                "Authorization": "Bearer xx.yy.zz"
-              }
+              "example": "coders_identity_token=xx.yy.zz"
             }
           }
         ],
