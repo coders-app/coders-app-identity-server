@@ -6,7 +6,7 @@ import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
-import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
+import type { CustomTokenPayload } from "../../types/types.js";
 
 const { verifyToken, users } = paths;
 

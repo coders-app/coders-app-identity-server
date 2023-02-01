@@ -1,5 +1,5 @@
 import { Joi } from "express-validation";
-import type { UserActivationCredentials } from "../../types/types";
+import type { UserActivationCredentials } from "../types/types.js";
 import { activationPasswordSchema } from "./userCredentialSchemas.js";
 import joiTypesError from "./joiTypesErrors.js";
 

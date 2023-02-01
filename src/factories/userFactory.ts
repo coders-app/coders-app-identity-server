@@ -1,7 +1,7 @@
 import { Factory } from "fishery";
 import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
-import type { UserWithId } from "../types/types";
+import type { UserWithId } from "../server/types/types";
 
 const userFactory = Factory.define<UserWithId>(() => ({
   name: faker.name.fullName(),

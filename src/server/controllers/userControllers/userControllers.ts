@@ -6,11 +6,11 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type {
+  CustomTokenPayload,
   UserActivationCredentials,
   UserCredentials,
   UserData,
-} from "../../../types/types.js";
-import type { CustomTokenPayload } from "./types.js";
+} from "../../types/types.js";
 import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
