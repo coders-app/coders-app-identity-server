@@ -1,5 +1,5 @@
 import { Joi } from "express-validation";
-import type { UserCredentials } from "../types/types.js";
+import type { UserCredentials } from "../types.js";
 import { emailSchema, loginPasswordSchema } from "./userCredentialSchemas.js";
 
 const loginUserSchema = {

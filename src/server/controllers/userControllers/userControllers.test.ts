@@ -7,7 +7,7 @@ import { activateUser, loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import { mockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
-import type { UserWithId } from "../../types/types.js";
+import type { UserWithId } from "../../types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";

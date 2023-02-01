@@ -10,7 +10,7 @@ import type {
   UserActivationCredentials,
   UserCredentials,
   UserData,
-} from "../../types/types.js";
+} from "../../types.js";
 import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";

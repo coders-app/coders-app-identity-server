@@ -13,7 +13,7 @@ import type {
   UserActivationCredentials,
   UserData,
   UserStructure,
-} from "../../types/types";
+} from "../../types";
 import {
   luisEmail,
   luisName,

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { environment } from "../../loadEnvironments.js";
-import type { CustomTokenPayload } from "../../server/types/types.js";
+import type { CustomTokenPayload } from "../../server/types.js";
 
 const {
   jwt: { jwtSecret },
