@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
@@ -14,13 +13,23 @@ import { getMockUserCredentials } from "../../../factories/userCredentialsFactor
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 import mongoose from "mongoose";
 
+const mockPasswordHash: jest.Mock<string> = jest.fn(() => "");
+const mockPasswordCompare: jest.Mock<boolean | Promise<Error>> = jest.fn(
+  () => true
+);
+jest.mock("../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js", () =>
+  jest.fn().mockImplementation(() => ({
+    passwordHash: () => mockPasswordHash(),
+    passwordCompare: () => mockPasswordCompare(),
+  }))
+);
+
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
 const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
 } = httpStatusCodes;
-
 const { cookieMaxAge, cookieName } = singleSignOnCookie;
 
 beforeEach(() => {
@@ -51,7 +60,7 @@ describe("Given a registerUser Controller", () => {
         .fn()
         .mockReturnValueOnce({ ...userCreatedMock, save: jest.fn() });
 
-      bcrypt.hash = jest.fn().mockResolvedValueOnce("mock activation key");
+      mockPasswordHash.mockReturnValueOnce("mock activation key");
 
       await registerUser(req as Request, res as Response, next as NextFunction);
 
@@ -114,7 +123,7 @@ describe("Given a loginUser controller", () => {
       req.body = incorrectUserCredentials;
 
       User.findOne = jest.fn().mockResolvedValueOnce(incorrectUserCredentials);
-      bcrypt.compare = jest.fn().mockResolvedValueOnce(false);
+      mockPasswordCompare.mockReturnValueOnce(false);
 
       const incorrectPasswordError = new CustomError(
         "Incorrect password",
@@ -136,7 +145,7 @@ describe("Given a loginUser controller", () => {
 
       User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
-      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
+      mockPasswordCompare.mockReturnValueOnce(true);
 
       jwt.sign = jest.fn().mockReturnValueOnce(mockToken);
 
@@ -166,7 +175,7 @@ describe("Given a loginUser controller", () => {
 
       User.findOne = jest.fn().mockResolvedValueOnce(existingUser);
 
-      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
+      mockPasswordCompare.mockReturnValueOnce(true);
 
       await loginUser(req as Request, null, next);
 
@@ -181,7 +190,7 @@ describe("Given a loginUser controller", () => {
       req.body = userCredentials;
 
       User.findOne = jest.fn().mockResolvedValueOnce(userCredentials);
-      bcrypt.compare = jest.fn().mockRejectedValueOnce(bcryptError);
+      mockPasswordCompare.mockRejectedValueOnce(bcryptError);
 
       await loginUser(req as Request, null, next);
 
@@ -210,8 +219,8 @@ describe("Given an activateUser function", () => {
       User.findById = jest
         .fn()
         .mockResolvedValueOnce({ ...user, activationKey, save: jest.fn() });
-      bcrypt.compare = jest.fn().mockResolvedValueOnce(true);
-      bcrypt.hash = jest.fn().mockResolvedValueOnce(password);
+      mockPasswordCompare.mockReturnValueOnce(true);
+      mockPasswordHash.mockReturnValueOnce(password);
 
       await activateUser(req as Request, res as Response, null);
 

@@ -1,4 +1,3 @@
-import bcrypt from "bcryptjs";
 import type { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
@@ -15,6 +14,7 @@ import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 import mongoose from "mongoose";
+import PasswordHasherBcrypt from "../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
@@ -27,6 +27,8 @@ const {
 } = httpStatusCodes;
 
 const { cookieName, cookieMaxAge } = singleSignOnCookie;
+
+const passwordHasher = new PasswordHasherBcrypt();
 
 export const registerUser = async (
   req: Request<Record<string, unknown>, Record<string, unknown>, UserData>,
@@ -43,7 +45,7 @@ export const registerUser = async (
 
     const userId = newUser._id.toString();
 
-    const activationKey = await bcrypt.hash(userId, 10);
+    const activationKey = await passwordHasher.passwordHash(userId);
 
     newUser.activationKey = activationKey;
 
@@ -103,7 +105,7 @@ export const loginUser = async (
       );
     }
 
-    if (!(await bcrypt.compare(password, user.password))) {
+    if (!(await passwordHasher.passwordCompare(password, user.password))) {
       throw new CustomError(
         "Incorrect password",
         unauthorizedCode,
@@ -172,12 +174,15 @@ export const activateUser = async (
 
     if (
       !user.activationKey ||
-      !(await bcrypt.compare(userId as string, user.activationKey))
+      !(await passwordHasher.passwordCompare(
+        userId as string,
+        user.activationKey
+      ))
     ) {
       throw invalidActivationKeyError;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await passwordHasher.passwordHash(password);
 
     user.password = hashedPassword;
     user.isActive = true;
