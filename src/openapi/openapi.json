@@ -37,13 +37,27 @@
             "example": "luis@email.com"
           }
         }
+      },
+      "User Activation Credentials": {
+        "type": "object",
+        "required": ["password", "confirmPassword"],
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "q65T!34mBC8h3#ul7K"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "q65T!34mBC8h3#ul7K"
+          }
+        }
       }
     },
     "securitySchemes": {
-      "Bearer Auth": {
+      "Cookie Auth": {
         "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
+        "name": "coders_identity_token",
+        "cookieFormat": "JWT"
       }
     },
     "responses": {
@@ -88,6 +102,56 @@
         }
       }
     },
+    "/users/activate": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Activates a user account",
+        "parameters": [
+          {
+            "description": "User Activation Key",
+            "required": true,
+            "name": "activationKey",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "507f191e810c19729de860ea"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User Activation Credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User activated",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User account has been activated"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid activation key",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Invalid activation key"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/login": {
       "post": {
         "tags": ["User"],
@@ -125,20 +189,18 @@
         "summary": "Verify user token",
         "security": [
           {
-            "Bearer Auth": []
+            "Cookie Auth": []
           }
         ],
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
+            "in": "cookie",
+            "name": "coders_identity_token",
             "required": true,
-            "description": "A valid JWT token must be passed in the 'Authorization' header.",
+            "description": "A valid JWT token must be passed in the 'coders_identity_token' cookie",
             "schema": {
               "type": "string",
-              "example": {
-                "Authorization": "Bearer xx.yy.zz"
-              }
+              "example": "coders_identity_token=xx.yy.zz"
             }
           }
         ],
