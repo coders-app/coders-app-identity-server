@@ -8,17 +8,17 @@ import app from "../../app.js";
 import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import User from "../../../database/models/User.js";
-import type { CustomTokenPayload } from "../../controllers/userControllers/types";
+import type {
+  CustomTokenPayload,
+  UserActivationCredentials,
+  UserData,
+  UserStructure,
+} from "../../types";
 import {
   luisEmail,
   luisName,
   martaEmail,
 } from "../../../testUtils/mocks/mockUsers";
-import type {
-  UserActivationCredentials,
-  UserData,
-  UserStructure,
-} from "../../../types/types";
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";

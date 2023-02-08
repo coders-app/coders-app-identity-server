@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { environment } from "../../../loadEnvironments.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
-import type { CustomTokenPayload } from "../userControllers/types.js";
+import type { CustomTokenPayload } from "../../types.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {

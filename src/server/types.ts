@@ -1,4 +1,4 @@
-import type nodemailer from "nodemailer";
+import type { JwtPayload } from "jsonwebtoken";
 
 export interface UserCredentials {
   email: string;
@@ -13,7 +13,6 @@ export interface UserActivationCredentials
 export interface UserData extends Omit<UserCredentials, "password"> {
   name: string;
 }
-
 export interface UserStructure
   extends UserData,
     Pick<UserCredentials, "password"> {
@@ -21,16 +20,12 @@ export interface UserStructure
   isActive: boolean;
   activationKey: string;
 }
+export interface CustomTokenPayload
+  extends Pick<UserStructure, "name" | "isAdmin">,
+    JwtPayload {
+  id: string;
+}
 
 export interface UserWithId extends UserStructure {
   _id: string;
 }
-
-export type WithRequiredProperties<T, K extends keyof T> = T & {
-  [P in K]-?: T[P];
-};
-
-export type EmailOptions = WithRequiredProperties<
-  nodemailer.SendMailOptions,
-  "to" | "subject" | "text"
->;
