@@ -24,7 +24,7 @@ You can run tests in watch mode with:
 
 These git hooks are configured in the project with Husky:
 
-- `pre-commit`: fails if it finds `console.*` or `debugger` statements, also runs ESLint and fails if errors are present.
+- `pre-commit`: fails if it finds `console.*` or `debugger` statements, also runs Prettier and ESLint and fails if ESLint errors are present.
 - `commit-msg`: fails if the message is shorter than 11 or longer than 71 characters.
 - `pre-push`: fails if the name of the branch doesn't start with _feature/_, _bugfix/_ or /_hotfix/_.
 

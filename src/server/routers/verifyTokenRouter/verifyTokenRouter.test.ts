@@ -7,8 +7,14 @@ import {
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../types.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const { verifyToken, users } = paths;
+
+const { cookieName } = singleSignOnCookie;
+
+const correctCookie = `${cookieName}=${mockToken}`;
+const incorrectCookie = `${cookieName}=incorrect-cookie`;
 
 const {
   successCodes: { okCode },
@@ -17,9 +23,8 @@ const {
 
 describe("Given a GET /verify-token endpoint", () => {
   const expectedMessage = "Unauthorized";
-  const mockAuthorizationHeader = `Bearer ${mockToken}`;
 
-  describe("When it receives a request with no auth header", () => {
+  describe("When it receives a request with no cookie", () => {
     test("Then it should respond with status 401 and 'Unauthorized' error message ", async () => {
       const expectedStatus = unauthorizedCode;
 
@@ -33,7 +38,7 @@ describe("Given a GET /verify-token endpoint", () => {
     });
   });
 
-  describe("When it receives a request with auth header and a valid token", () => {
+  describe("When it receives a request with a cookie and a valid token", () => {
     test("Then it should respond with status 200 and userPayload in the body", async () => {
       const expectedStatus = okCode;
 
@@ -41,7 +46,7 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(`${users}${verifyToken}`)
-        .set("Authorization", mockAuthorizationHeader)
+        .set("Cookie", [correctCookie])
         .send(mockTokenPayload)
         .expect(expectedStatus);
 
@@ -57,7 +62,7 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(`${users}${verifyToken}`)
-        .set("Authorization", "Bearer #")
+        .set("Cookie", [incorrectCookie])
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);

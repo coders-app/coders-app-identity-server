@@ -4,6 +4,7 @@ import { environment } from "../../../loadEnvironments.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import type { CustomTokenPayload } from "../../types.js";
+import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
 
 const {
   successCodes: { okCode },
@@ -14,15 +15,17 @@ const {
   jwt: { jwtSecret },
 } = environment;
 
+const { cookieName } = singleSignOnCookie;
+
 const userAuthentication = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.header("Authorization");
+    const authToken = (req.cookies as Record<string, string>)[cookieName];
 
-    if (!authHeader) {
+    if (!authToken) {
       throw new CustomError(
         "No Token provided",
         unauthorizedCode,
@@ -30,18 +33,8 @@ const userAuthentication = (
       );
     }
 
-    if (!authHeader.startsWith("Bearer")) {
-      throw new CustomError(
-        "Missing Bearer in token",
-        unauthorizedCode,
-        "Missing Bearer in token"
-      );
-    }
-
-    const token = authHeader.replace(/^Bearer\s*/, "");
-
     const verifyToken: CustomTokenPayload = jwt.verify(
-      token,
+      authToken,
       jwtSecret
     ) as CustomTokenPayload;
 
