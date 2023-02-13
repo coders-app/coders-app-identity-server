@@ -5,7 +5,6 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../../database/connectDatabase";
 import mongoose from "mongoose";
 import app from "../../app.js";
-import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import User from "../../../database/models/User.js";
 import type {
@@ -22,10 +21,9 @@ import {
 import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";
+import { paths } from "../paths";
 
 jest.mock("../../../email/sendEmail/sendEmail.js");
-
-const { users, register, login, activate } = paths;
 
 const {
   successCodes: { createdCode, okCode },
@@ -54,7 +52,7 @@ describe("Given a POST /users/register endpoint", () => {
       const newUser = getMockUserData({ name: luisName, email: luisEmail });
 
       const response: { body: { user: UserStructure } } = await request(app)
-        .post(`${users}${register}`)
+        .post(paths.users.register)
         .send(newUser)
         .expect(createdCode);
 
@@ -78,7 +76,7 @@ describe("Given a POST /users/register endpoint", () => {
       const expectedError = "User already exists";
 
       const response = await request(app)
-        .post(`${users}${register}`)
+        .post(paths.users.register)
         .send(existingUser)
         .expect(conflictCode);
 
@@ -98,7 +96,7 @@ describe("Given a POST /users/register endpoint", () => {
       ].join("\n");
 
       const response = await request(app)
-        .post(`${users}${register}`)
+        .post(paths.users.register)
         .send(emptyUser)
         .expect(badRequestCode);
 
@@ -143,7 +141,7 @@ describe("Given a POST /users/login endpoint", () => {
       const { email, password, name } = luisitoUser;
 
       const response = await request(app)
-        .post(`${users}${login}`)
+        .post(paths.users.login)
         .send({ email, password })
         .expect(okCode);
 
@@ -170,7 +168,7 @@ describe("Given a POST /users/login endpoint", () => {
       const incorrectPassword = "luisito1";
 
       const response = await request(app)
-        .post(`${users}${login}`)
+        .post(paths.users.login)
         .send({ email, password: incorrectPassword })
         .expect(unauthorizedCode);
 
@@ -187,7 +185,7 @@ describe("Given a POST /users/login endpoint", () => {
       };
 
       const response = await request(app)
-        .post(`${users}${login}`)
+        .post(paths.users.login)
         .send({ email, password })
         .expect(unauthorizedCode);
 
@@ -204,7 +202,7 @@ describe("Given a POST /users/login endpoint", () => {
       const password = "luisito";
 
       const response = await request(app)
-        .post(`${users}${login}`)
+        .post(paths.users.login)
         .send({ email, password })
         .expect(badRequestCode);
 
@@ -244,7 +242,7 @@ describe("Given a POST /users/activate endpoint", () => {
       };
 
       const response = await request(app)
-        .post(`${users}${activate}?activationKey=${luisitoId}`)
+        .post(`${paths.users.activate}?activationKey=${luisitoId}`)
         .send(activationBody)
         .expect(okCode);
 
@@ -260,7 +258,7 @@ describe("Given a POST /users/activate endpoint", () => {
       };
 
       const response = await request(app)
-        .post(`${users}${activate}?activationKey=${invalidActivationKey}`)
+        .post(`${paths.users.activate}?activationKey=${invalidActivationKey}`)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -293,7 +291,7 @@ describe("Given a POST /users/activate endpoint", () => {
       };
 
       const response = await request(app)
-        .post(`${users}${activate}?activationKey=${martitaId}`)
+        .post(`${paths.users.activate}?activationKey=${martitaId}`)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -311,7 +309,7 @@ describe("Given a POST /users/activate endpoint", () => {
       };
 
       const response = await request(app)
-        .post(`${users}${activate}?activationKey=${activationKey}`)
+        .post(`${paths.users.activate}?activationKey=${activationKey}`)
         .send(activationBody)
         .expect(badRequestCode);
 

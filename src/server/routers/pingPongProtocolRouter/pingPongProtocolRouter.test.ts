@@ -1,9 +1,8 @@
 import request from "supertest";
 import app from "../../app";
-import paths from "../paths";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
+import { paths } from "../paths";
 
-const { baseUrl } = paths;
 const {
   successCodes: { okCode },
 } = httpStatusCodes;
@@ -14,7 +13,9 @@ describe("Given a GET / endpoint", () => {
       const expectedStatus = okCode;
       const expectedMessage = "Pong 🏓";
 
-      const response = await request(app).get(baseUrl).expect(expectedStatus);
+      const response = await request(app)
+        .get(paths.root)
+        .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("message", expectedMessage);
     });
