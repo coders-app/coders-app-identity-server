@@ -8,8 +8,8 @@ const {
   MONGODB_DEBUG: mongoDbDebug,
   ORIGIN_WHITELIST: originWhitelist,
   JWT_SECRET: jwtSecret,
-  BASIC_AUTH_USERNAME: basicAuthUsername,
-  BASIC_AUTH_PASSWORD: basicAuthPassword,
+  SWAGGER_BASIC_AUTH_USERNAME: swaggerBasicAuthUsername,
+  SWAGGER_BASIC_AUTH_PASSWORD: swaggerBasicAuthPassword,
   SMTP_HOST: smtpHost,
   SMTP_PORT: smtpPort,
   SMTP_USERNAME: smtpUsername,
@@ -27,9 +27,9 @@ export const environment = {
     jwtSecret,
     tokenExpiry,
   },
-  basicAuth: {
-    username: basicAuthUsername,
-    password: basicAuthPassword,
+  swaggerAuth: {
+    username: swaggerBasicAuthUsername,
+    password: swaggerBasicAuthPassword,
   },
   smtp: {
     host: smtpHost,
