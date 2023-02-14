@@ -27,3 +27,4 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           EMAIL_SENDER: ${{ secrets.JWT_SECRET }}
           TOKEN_EXPIRY: ${{ secrets.TOKEN_EXPIRY}}
+          APP_NAME: ${{ secrets.APP_NAME}}
