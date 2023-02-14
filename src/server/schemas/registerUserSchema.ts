@@ -1,5 +1,5 @@
 import { Joi } from "express-validation";
-import type { UserData } from "../../types/types.js";
+import type { UserData } from "../types.js";
 import joiTypesError from "./joiTypesErrors.js";
 import { emailSchema } from "./userCredentialSchemas.js";
 

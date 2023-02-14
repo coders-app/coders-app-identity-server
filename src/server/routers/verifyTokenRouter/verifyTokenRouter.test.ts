@@ -1,15 +1,13 @@
 import request from "supertest";
 import app from "../../app.js";
-import paths from "../paths.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
-import type { CustomTokenPayload } from "../../controllers/userControllers/types.js";
+import type { CustomTokenPayload } from "../../types.js";
 import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
-
-const { verifyToken, users } = paths;
+import { paths } from "../paths.js";
 
 const { cookieName } = singleSignOnCookie;
 
@@ -31,7 +29,7 @@ describe("Given a GET /verify-token endpoint", () => {
       const response: {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
-        .get(`${users}${verifyToken}`)
+        .get(paths.users.verifyToken)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
@@ -45,7 +43,7 @@ describe("Given a GET /verify-token endpoint", () => {
       const response: {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
-        .get(`${users}${verifyToken}`)
+        .get(paths.users.verifyToken)
         .set("Cookie", [correctCookie])
         .send(mockTokenPayload)
         .expect(expectedStatus);
@@ -61,7 +59,7 @@ describe("Given a GET /verify-token endpoint", () => {
       const response: {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
-        .get(`${users}${verifyToken}`)
+        .get(paths.users.verifyToken)
         .set("Cookie", [incorrectCookie])
         .expect(expectedStatus);
 

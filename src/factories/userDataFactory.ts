@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { Factory } from "fishery";
-import type { UserData } from "../types/types";
+import type { UserData } from "../server/types";
 
 const userDataFactory = Factory.define<UserData>(() => ({
   name: faker.name.fullName(),
