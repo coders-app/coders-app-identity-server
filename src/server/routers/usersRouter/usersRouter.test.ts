@@ -93,7 +93,7 @@ describe("Given a POST /users/register endpoint", () => {
       const expectedMessage = [
         "Name shouldn't be empty",
         "Email shouldn't be empty",
-      ].join("\n");
+      ].join(" & ");
 
       const response = await request(app)
         .post(paths.users.register)
@@ -196,7 +196,7 @@ describe("Given a POST /users/login endpoint", () => {
   describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
     test("Then it should respond with status 400 and the errors 'Email must be a valid email'", async () => {
       const expectedErrors = {
-        error: ['"Email" must be a valid email'].join("\n"),
+        error: ["Email must be a valid email"].join(" & "),
       };
       const email = "luisito";
       const password = "luisito";
