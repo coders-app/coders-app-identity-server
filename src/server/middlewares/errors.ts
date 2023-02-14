@@ -22,8 +22,9 @@ const generalError = (
 ) => {
   if (error instanceof ValidationError) {
     const validationErrors = error.details.body
-      .map((joiError) => joiError.message)
-      .join("\n");
+      // eslint-disable-next-line no-useless-escape
+      .map((joiError) => joiError.message.replaceAll(`\"`, ""))
+      .join(" & ");
 
     error.publicMessage = validationErrors;
 
