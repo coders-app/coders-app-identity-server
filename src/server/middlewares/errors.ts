@@ -1,5 +1,5 @@
 import "../../loadEnvironments.js";
-import debugCreator from "debug";
+import debugConfig from "../../utils/debugConfig.js";
 import chalk from "chalk";
 import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
@@ -11,7 +11,7 @@ const {
   clientErrors: { notFoundCode },
 } = httpStatusCodes;
 
-const debug = debugCreator("identity-server:middlewares:errors");
+const debug = debugConfig.extend("middlewares:errors");
 
 const generalError = (
   error: CustomError,

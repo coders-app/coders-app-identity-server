@@ -1,5 +1,5 @@
 import transporter from "../transporter.js";
-import debugConfig from "debug";
+import debugConfig from "../../utils/debugConfig.js";
 import chalk from "chalk";
 import { environment } from "../../loadEnvironments.js";
 import type { EmailOptions } from "../types.js";
@@ -9,7 +9,7 @@ const {
   smtp: { emailSender },
 } = environment;
 
-const debug = debugConfig("identity-server:email");
+const debug = debugConfig.extend("email");
 
 const sendEmail = async ({
   to,

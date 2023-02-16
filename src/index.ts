@@ -1,12 +1,12 @@
 import { environment } from "./loadEnvironments.js";
-import debugCreator from "debug";
+import debugConfig from "./utils/debugConfig.js";
 import chalk from "chalk";
 import { mongo } from "mongoose";
 import startServer from "./server/startServer.js";
 import connectDatabase from "./database/connectDatabase.js";
 import type CustomError from "./CustomError/CustomError.js";
 
-const debug = debugCreator("identity-server:root");
+const debug = debugConfig.extend("root");
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { MongoServerError } = mongo;

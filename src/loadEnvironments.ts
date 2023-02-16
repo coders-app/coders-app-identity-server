@@ -16,6 +16,7 @@ const {
   SMTP_PASSWORD: smtpPassword,
   EMAIL_SENDER: emailSender,
   TOKEN_EXPIRY: tokenExpiry,
+  APP_NAME: appName,
 } = process.env;
 
 export const environment = {
@@ -38,4 +39,5 @@ export const environment = {
     port: +smtpPort,
     emailSender,
   },
+  appName,
 };
