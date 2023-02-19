@@ -7,13 +7,15 @@ import {
 } from "../../../testUtils/mocks/mockToken";
 import httpStatusCodes from "../../../utils/httpStatusCodes";
 import userAuthentication from "./authControllers";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie";
+import config from "../../../config";
 
 const {
   clientErrors: { unauthorizedCode },
 } = httpStatusCodes;
 
-const { cookieName } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieName },
+} = config;
 
 const req: Partial<Request> = {};
 

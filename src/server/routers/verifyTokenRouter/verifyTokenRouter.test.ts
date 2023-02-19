@@ -6,10 +6,12 @@ import {
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../types.js";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import config from "../../../config.js";
 import { paths } from "../paths.js";
 
-const { cookieName } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieName },
+} = config;
 
 const correctCookie = `${cookieName}=${mockToken}`;
 const incorrectCookie = `${cookieName}=incorrect-cookie`;

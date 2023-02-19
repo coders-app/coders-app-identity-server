@@ -26,7 +26,7 @@ export const environment = {
   originWhitelist: originWhitelist.split(","),
   jwt: {
     jwtSecret,
-    tokenExpiry,
+    tokenExpiry: +tokenExpiry,
   },
   swaggerAuth: {
     username: swaggerBasicAuthUsername,

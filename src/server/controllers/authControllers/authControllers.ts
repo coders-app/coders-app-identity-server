@@ -4,7 +4,7 @@ import { environment } from "../../../loadEnvironments.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import httpStatusCodes from "../../../utils/httpStatusCodes.js";
 import type { CustomTokenPayload } from "../../types.js";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import config from "../../../config.js";
 
 const {
   successCodes: { okCode },
@@ -15,7 +15,9 @@ const {
   jwt: { jwtSecret },
 } = environment;
 
-const { cookieName } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieName },
+} = config;
 
 const userAuthentication = (
   req: Request,

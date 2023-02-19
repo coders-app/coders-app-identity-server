@@ -10,7 +10,7 @@ import type { UserWithId } from "../../types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import config from "../../../config.js";
 import mongoose from "mongoose";
 
 const mockPasswordHash: jest.Mock<string> = jest.fn(() => "");
@@ -30,7 +30,9 @@ const {
   successCodes: { createdCode, okCode },
   clientErrors: { unauthorizedCode, conflictCode },
 } = httpStatusCodes;
-const { cookieMaxAge, cookieName } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieMaxAge, cookieName },
+} = config;
 
 beforeEach(() => {
   jest.clearAllMocks();
