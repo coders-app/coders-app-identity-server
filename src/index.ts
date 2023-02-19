@@ -1,5 +1,5 @@
 import { environment } from "./loadEnvironments.js";
-import debugConfig from "./utils/debugConfig.js";
+import debugConfig from "./utils/debugConfig/debugConfig.js";
 import chalk from "chalk";
 import { mongo } from "mongoose";
 import startServer from "./server/startServer.js";

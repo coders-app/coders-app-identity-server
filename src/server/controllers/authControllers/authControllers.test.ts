@@ -5,7 +5,7 @@ import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
-import httpStatusCodes from "../../../utils/httpStatusCodes";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes";
 import userAuthentication from "./authControllers";
 import config from "../../../config";
 

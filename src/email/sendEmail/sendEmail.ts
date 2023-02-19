@@ -1,5 +1,5 @@
 import transporter from "../transporter.js";
-import debugConfig from "../../utils/debugConfig.js";
+import debugConfig from "../../utils/debugConfig/debugConfig.js";
 import chalk from "chalk";
 import { environment } from "../../loadEnvironments.js";
 import type { EmailOptions } from "../types.js";

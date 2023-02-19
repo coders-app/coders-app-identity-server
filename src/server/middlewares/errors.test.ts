@@ -1,7 +1,7 @@
 import type { Request, NextFunction, Response } from "express";
 import generalError, { unknownEndpoint } from "./errors";
 import CustomError from "../../CustomError/CustomError";
-import httpStatusCodes from "../../utils/httpStatusCodes";
+import httpStatusCodes from "../../constants/statusCodes/httpStatusCodes";
 
 const {
   serverErrors: { internalServerErrorCode },

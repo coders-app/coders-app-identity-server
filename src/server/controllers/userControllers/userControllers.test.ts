@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
-import httpStatusCodes from "../../../utils/httpStatusCodes.js";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import { activateUser, loginUser, registerUser } from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import { mockToken } from "../../../testUtils/mocks/mockToken.js";

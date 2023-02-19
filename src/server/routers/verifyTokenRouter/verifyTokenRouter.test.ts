@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../app.js";
-import httpStatusCodes from "../../../utils/httpStatusCodes.js";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import {
   mockToken,
   mockTokenPayload,
