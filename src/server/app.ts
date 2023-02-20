@@ -5,14 +5,17 @@ import basicAuth from "express-basic-auth";
 import swaggerUi from "swagger-ui-express";
 import pingPongProtocolRouter from "./routers/pingPongProtocolRouter/pingPongProtocolRouter.js";
 import corsOptions from "./cors/corsOptions.js";
-import generalError, { unknownEndpoint } from "./middlewares/errors.js";
+import generalError, { unknownEndpoint } from "./middlewares/errors/errors.js";
 import openApiDocument from "../openapi/index.js";
 import usersRouter from "./routers/usersRouter/usersRouter.js";
 import { environment } from "../loadEnvironments.js";
 import verifyTokenRouter from "./routers/verifyTokenRouter/verifyTokenRouter.js";
 import { partialPaths, paths } from "./routers/paths.js";
+import setHeaderCredentials from "./middlewares/setHeaderCredentials/setHeaderCredentials.js";
 
 const app = express();
+
+app.use(setHeaderCredentials);
 
 app.use(cors(corsOptions));
 app.disable("x-powered-by");
