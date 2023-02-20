@@ -1,4 +1,4 @@
-jest.mock("./utils/loadJson", () => ({
+jest.mock("./utils/loadJson/loadJson", () => ({
   loadJson: () => ({}),
 }));
 

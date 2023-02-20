@@ -2,7 +2,7 @@ import type { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
-import httpStatusCodes from "../../../utils/httpStatusCodes.js";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type {
   CustomTokenPayload,
@@ -12,7 +12,7 @@ import type {
 } from "../../types.js";
 import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import config from "../../../config.js";
 import mongoose from "mongoose";
 import PasswordHasherBcrypt from "../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js";
 
@@ -26,7 +26,9 @@ const {
   serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
 
-const { cookieName, cookieMaxAge } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieName, cookieMaxAge },
+} = config;
 
 const passwordHasher = new PasswordHasherBcrypt();
 
