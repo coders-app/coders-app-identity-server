@@ -1,4 +1,4 @@
-import { environment } from "./loadEnvironments";
+import { environment } from "./loadEnvironments.js";
 
 const config = {
   singleSignOnCookie: {
