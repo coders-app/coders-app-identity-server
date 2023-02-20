@@ -1,5 +1,5 @@
 import configureDebug from "debug";
-import { environment } from "../loadEnvironments.js";
+import { environment } from "../../loadEnvironments";
 
 const debugConfig = configureDebug(environment.appName);
 

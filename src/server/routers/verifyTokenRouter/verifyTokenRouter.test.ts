@@ -1,15 +1,17 @@
 import request from "supertest";
 import app from "../../app.js";
-import httpStatusCodes from "../../../utils/httpStatusCodes.js";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken.js";
 import type { CustomTokenPayload } from "../../types.js";
-import singleSignOnCookie from "../../../utils/singleSignOnCookie.js";
+import config from "../../../config.js";
 import { paths } from "../paths.js";
 
-const { cookieName } = singleSignOnCookie;
+const {
+  singleSignOnCookie: { cookieName },
+} = config;
 
 const correctCookie = `${cookieName}=${mockToken}`;
 const incorrectCookie = `${cookieName}=incorrect-cookie`;

@@ -1,7 +1,7 @@
 import type { CorsOptions } from "cors";
 import { environment } from "../../loadEnvironments.js";
 import CustomError from "../../CustomError/CustomError.js";
-import httpStatusCodes from "../../utils/httpStatusCodes.js";
+import httpStatusCodes from "../../constants/statusCodes/httpStatusCodes.js";
 
 const { originWhitelist } = environment;
 
