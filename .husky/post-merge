@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+git diff HEAD~ HEAD --name-only | grep -E '^(package-lock\.json|yarn\.lock)$'
