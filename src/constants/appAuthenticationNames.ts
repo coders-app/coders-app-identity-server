@@ -1,6 +1,8 @@
+import { environment } from "../loadEnvironments";
+
 const appAuthenticationNames = {
   apiKeyHeader: "X-API-KEY",
-  current: "identity-server",
+  current: environment.appName,
   apiGateway: "api-gateway",
 };
 
