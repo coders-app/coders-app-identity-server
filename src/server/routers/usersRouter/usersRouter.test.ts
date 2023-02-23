@@ -27,8 +27,14 @@ import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
+import appAuthenticationNames from "../../../constants/appAuthenticationNames";
+import { environment } from "../../../loadEnvironments";
 
 jest.mock("../../../email/sendEmail/sendEmail.js");
+
+const { apiGatewayKey } = environment;
+
+const { apiKeyHeader } = appAuthenticationNames;
 
 const {
   singleSignOnCookie: { cookieName },
@@ -59,12 +65,13 @@ describe("Given a POST /users/register endpoint", () => {
     await User.deleteMany({});
   });
 
-  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com'", () => {
+  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 201 and the user's credentials in the body", async () => {
       const newUser = getMockUserData({ name: luisName, email: luisEmail });
 
       const response: { body: { user: UserStructure } } = await request(app)
         .post(paths.users.register)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(newUser)
         .expect(createdCode);
 
@@ -77,7 +84,7 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'marta@isdicoders.com'", () => {
+  describe("When it receives a request with email 'marta@isdicoders.com' and a correct api key in the header 'X-API-KEY'", () => {
     const existingUser = getMockUserData({ email: martaEmail });
 
     beforeEach(async () => {
@@ -89,6 +96,7 @@ describe("Given a POST /users/register endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.register)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(existingUser)
         .expect(conflictCode);
 
@@ -96,7 +104,7 @@ describe("Given a POST /users/register endpoint", () => {
     });
   });
 
-  describe("When it receives a request with an empty name and empty email", () => {
+  describe("When it receives a request with an empty name and empty email and a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 400 and in the body 'Name shouldn't be empty, Email shouldn't be empty'", async () => {
       const emptyUser: UserData = {
         name: "",
@@ -109,10 +117,29 @@ describe("Given a POST /users/register endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.register)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(emptyUser)
         .expect(badRequestCode);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
+    });
+  });
+
+  describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and an incorrect api key in the header 'X-API-KEY'", () => {
+    test("Then it should respond with status 401 and the error 'Invalid API Key'", async () => {
+      const newUser = getMockUserData({ name: luisName, email: luisEmail });
+      const incorrectApiGatewayKey = "incorrect key";
+      const expectedErrorMessage = "Invalid API Key";
+
+      const response: { body: { error: string } } = await request(app)
+        .post(paths.users.register)
+        .set(apiKeyHeader, incorrectApiGatewayKey)
+        .send(newUser)
+        .expect(unauthorizedCode);
+
+      const { error } = response.body;
+
+      expect(error).toBe(expectedErrorMessage);
     });
   });
 });
@@ -148,12 +175,13 @@ describe("Given a POST /users/login endpoint", () => {
     await User.deleteMany();
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active", () => {
-    test("Then it should respond with status 200 and a token", async () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com', a correct password and the user is registered and active and it receives a correct api key in the header 'X-API-KEY'", () => {
+    test("Then it should respond with status 200 and a Set-cookie header with a token", async () => {
       const { email, password, name } = luisitoUser;
 
       const response = await request(app)
         .post(paths.users.login)
+        .set(apiKeyHeader, apiGatewayKey)
         .send({ email, password })
         .expect(okCode);
 
@@ -174,13 +202,14 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active", () => {
+  describe("When it receives a request with email 'luisito@isdicoders.com' and incorrect password 'luisito1' and the user is registered and active and it receives a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with error 'Incorrect email or password'", async () => {
       const { email } = luisitoUser;
       const incorrectPassword = "luisito1";
 
       const response = await request(app)
         .post(paths.users.login)
+        .set(apiKeyHeader, apiGatewayKey)
         .send({ email, password: incorrectPassword })
         .expect(unauthorizedCode);
 
@@ -188,7 +217,7 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with email 'martita@isdicoders.com' a password, and the user exists but is inactive", () => {
+  describe("When it receives a request with email 'martita@isdicoders.com' a password, and the user exists but is inactive and it receives a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 401 and message 'User is inactive, contact your administrator if you think this is a mistake'", async () => {
       const { email, password } = martitaUser;
       const inactiveUserError = {
@@ -198,6 +227,7 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
+        .set(apiKeyHeader, apiGatewayKey)
         .send({ email, password })
         .expect(unauthorizedCode);
 
@@ -205,7 +235,7 @@ describe("Given a POST /users/login endpoint", () => {
     });
   });
 
-  describe("When it receives a request with invalid email 'luisito' and short password 'luisito'", () => {
+  describe("When it receives a request with invalid email 'luisito' and short password 'luisito' and a correct api key in the header 'X-API-KEY' ", () => {
     test("Then it should respond with status 400 and the errors 'Email must be a valid email'", async () => {
       const expectedErrors = {
         error: ["Email must be a valid email"].join(" & "),
@@ -215,6 +245,7 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
+        .set(apiKeyHeader, apiGatewayKey)
         .send({ email, password })
         .expect(badRequestCode);
 
@@ -247,7 +278,7 @@ describe("Given a POST /users/activate endpoint", () => {
     await User.deleteMany();
   });
 
-  describe("When it receives query string activationKey and password & confirmPassword 'luisito123' and the activation key is correct", () => {
+  describe("When it receives query string activationKey and password & confirmPassword 'luisito123' and the activation key is correct and it receives a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 200 and message 'User account has been activated'", async () => {
       const expectedMessage = {
         message: "User account has been activated",
@@ -255,6 +286,7 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${luisitoId}`)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(activationBody)
         .expect(okCode);
 
@@ -262,7 +294,7 @@ describe("Given a POST /users/activate endpoint", () => {
     });
   });
 
-  describe("When it receives query string activationKey and it is invalid", () => {
+  describe("When it receives query string activationKey and it is invalid and it receives a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 401 'Invalid activation key'", async () => {
       const invalidActivationKey = new mongoose.Types.ObjectId().toString();
       const expectedMessage = {
@@ -271,6 +303,7 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${invalidActivationKey}`)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -278,7 +311,7 @@ describe("Given a POST /users/activate endpoint", () => {
     });
   });
 
-  describe("When it receives query string activationKey with correct ID but the stored hash has expired", () => {
+  describe("When it receives query string activationKey with correct ID but the stored hash has expired and it receives a correct api key in the header 'X-API-KEY'", () => {
     const martitaPassword = "martita123";
     let martitaId: string;
     const activationBody = {
@@ -304,6 +337,7 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${martitaId}`)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -311,7 +345,7 @@ describe("Given a POST /users/activate endpoint", () => {
     });
   });
 
-  describe("When it receives query string activationKey, and in the body password 'luisito123' and confirmPassword 'luisito1234'", () => {
+  describe("When it receives query string activationKey, and in the body password 'luisito123' and confirmPassword 'luisito1234' and a correct api key in the header 'X-API-KEY'", () => {
     test("Then it should respond with status 400 and message 'Passwords must match'", async () => {
       const activationKey = new mongoose.Types.ObjectId().toString();
       const expectedMessage = { error: "Passwords must match" };
@@ -322,6 +356,7 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${activationKey}`)
+        .set(apiKeyHeader, apiGatewayKey)
         .send(activationBody)
         .expect(badRequestCode);
 
