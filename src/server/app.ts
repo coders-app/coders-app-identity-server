@@ -3,7 +3,6 @@ import morgan from "morgan";
 import cors from "cors";
 import basicAuth from "express-basic-auth";
 import swaggerUi from "swagger-ui-express";
-import * as apiKeyAuthenticator from "coders-app-api-key-authenticator";
 import pingPongProtocolRouter from "./routers/pingPongProtocolRouter/pingPongProtocolRouter.js";
 import corsOptions from "./cors/corsOptions.js";
 import generalError, { unknownEndpoint } from "./middlewares/errors/errors.js";
@@ -13,11 +12,6 @@ import { environment } from "../loadEnvironments.js";
 import verifyTokenRouter from "./routers/verifyTokenRouter/verifyTokenRouter.js";
 import { partialPaths, paths } from "./routers/paths.js";
 import setHeaderCredentials from "./middlewares/setHeaderCredentials/setHeaderCredentials.js";
-import appAuthenticationNames from "../constants/appAuthenticationNames.js";
-
-const { current: currentApp, apiGateway } = appAuthenticationNames;
-
-const { checkApiKey } = apiKeyAuthenticator;
 
 const app = express();
 
@@ -42,12 +36,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(openApiDocument)
 );
-
-app.use(
-  partialPaths.users.base,
-  checkApiKey(currentApp, apiGateway),
-  usersRouter
-);
+app.use(partialPaths.users.base, usersRouter);
 app.use(partialPaths.users.base, verifyTokenRouter);
 
 app.use(unknownEndpoint);

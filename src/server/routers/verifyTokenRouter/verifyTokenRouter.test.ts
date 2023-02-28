@@ -8,12 +8,6 @@ import {
 import type { CustomTokenPayload } from "../../types.js";
 import config from "../../../config.js";
 import { paths } from "../paths.js";
-import { environment } from "../../../loadEnvironments.js";
-import appAuthenticationNames from "../../../constants/appAuthenticationNames.js";
-
-const { apiGatewayKey } = environment;
-
-const { apiKeyHeader } = appAuthenticationNames;
 
 const {
   singleSignOnCookie: { cookieName },
@@ -38,7 +32,6 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(paths.users.verifyToken)
-        .set(apiKeyHeader, apiGatewayKey)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
@@ -54,7 +47,6 @@ describe("Given a GET /verify-token endpoint", () => {
       } = await request(app)
         .get(paths.users.verifyToken)
         .set("Cookie", [correctCookie])
-        .set(apiKeyHeader, apiGatewayKey)
         .send(mockTokenPayload)
         .expect(expectedStatus);
 
@@ -71,7 +63,6 @@ describe("Given a GET /verify-token endpoint", () => {
       } = await request(app)
         .get(paths.users.verifyToken)
         .set("Cookie", [incorrectCookie])
-        .set(apiKeyHeader, apiGatewayKey)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
