@@ -10,6 +10,8 @@ import loginUserSchema from "../../schemas/loginUserSchema.js";
 import activateUserSchema from "../../schemas/activateUserSchema.js";
 import { noAbortEarly } from "../../schemas/validateOptions.js";
 import { partialPaths } from "../paths.js";
+import cookieParser from "cookie-parser";
+import userAuthentication from "../../controllers/authControllers/authControllers.js";
 
 // eslint-disable-next-line new-cap
 const usersRouter = Router();
@@ -31,5 +33,9 @@ usersRouter.post(
   validate(activateUserSchema, {}, noAbortEarly),
   activateUser
 );
+
+usersRouter.use(cookieParser());
+
+usersRouter.get(partialPaths.users.verifyToken, userAuthentication);
 
 export default usersRouter;

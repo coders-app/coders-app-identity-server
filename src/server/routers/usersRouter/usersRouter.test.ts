@@ -22,8 +22,20 @@ import { getMockUserData } from "../../../factories/userDataFactory";
 import { getMockUser } from "../../../factories/userFactory";
 import cookieParser from "../../../testUtils/cookieParser";
 import { paths } from "../paths";
+import config from "../../../config";
+import {
+  mockToken,
+  mockTokenPayload,
+} from "../../../testUtils/mocks/mockToken";
 
 jest.mock("../../../email/sendEmail/sendEmail.js");
+
+const {
+  singleSignOnCookie: { cookieName },
+} = config;
+
+const correctCookie = `${cookieName}=${mockToken}`;
+const incorrectCookie = `${cookieName}=incorrect-cookie`;
 
 const {
   successCodes: { createdCode, okCode },
@@ -314,6 +326,55 @@ describe("Given a POST /users/activate endpoint", () => {
         .expect(badRequestCode);
 
       expect(response.body).toStrictEqual(expectedMessage);
+    });
+  });
+});
+
+describe("Given a GET /verify-token endpoint", () => {
+  const expectedMessage = "Unauthorized";
+
+  describe("When it receives a request with no cookie", () => {
+    test("Then it should respond with status 401 and 'Unauthorized' error message ", async () => {
+      const expectedStatus = unauthorizedCode;
+
+      const response: {
+        body: { userPayload: CustomTokenPayload };
+      } = await request(app)
+        .get(paths.users.verifyToken)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", expectedMessage);
+    });
+  });
+
+  describe("When it receives a request with a cookie and a valid token", () => {
+    test("Then it should respond with status 200 and userPayload in the body", async () => {
+      const expectedStatus = okCode;
+
+      const response: {
+        body: { userPayload: CustomTokenPayload };
+      } = await request(app)
+        .get(paths.users.verifyToken)
+        .set("Cookie", [correctCookie])
+        .send(mockTokenPayload)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("userPayload", mockTokenPayload);
+    });
+  });
+
+  describe("When it receives a request with auth header and an invalid token", () => {
+    test("Then it should respond with status 401 and error message 'Unauthorized'", async () => {
+      const expectedStatus = unauthorizedCode;
+
+      const response: {
+        body: { userPayload: CustomTokenPayload };
+      } = await request(app)
+        .get(paths.users.verifyToken)
+        .set("Cookie", [incorrectCookie])
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", expectedMessage);
     });
   });
 });

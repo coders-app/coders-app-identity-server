@@ -9,7 +9,6 @@ import generalError, { unknownEndpoint } from "./middlewares/errors/errors.js";
 import openApiDocument from "../openapi/index.js";
 import usersRouter from "./routers/usersRouter/usersRouter.js";
 import { environment } from "../loadEnvironments.js";
-import verifyTokenRouter from "./routers/verifyTokenRouter/verifyTokenRouter.js";
 import { partialPaths, paths } from "./routers/paths.js";
 import setHeaderCredentials from "./middlewares/setHeaderCredentials/setHeaderCredentials.js";
 
@@ -37,7 +36,6 @@ app.use(
   swaggerUi.setup(openApiDocument)
 );
 app.use(partialPaths.users.base, usersRouter);
-app.use(partialPaths.users.base, verifyTokenRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
