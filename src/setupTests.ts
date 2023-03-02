@@ -4,7 +4,7 @@ import { environment } from "./loadEnvironments";
 import appAuthenticationNames from "./constants/appAuthenticationNames";
 const { apiGatewayKey } = environment;
 
-const { apiKeyHeader } = appAuthenticationNames;
+const { apiKeyHeader, apiNameHeader, apiGateway } = appAuthenticationNames;
 
 jest.mock("./utils/loadJson/loadJson", () => ({
   loadJson: () => ({}),
@@ -23,7 +23,10 @@ jest.mock("coders-app-api-key-authenticator", () => ({
           "Invalid API Key"
         );
 
-        if (req.header(apiKeyHeader) !== apiGatewayKey) {
+        if (
+          req.header(apiKeyHeader) !== apiGatewayKey ||
+          req.header(apiNameHeader) !== apiGateway
+        ) {
           next(invalidKeyError);
           return;
         }

@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "coders-app-api-key-authenticator": "github:coders-app/coders-app-api-key-authenticator",
+    "coders-app-api-key-authenticator": "https://github.com/coders-app/coders-app-api-key-authenticator/tarball/feature/COD-107-get-api-name-from-header-in-check-api-key",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "debug": "^4.3.4",

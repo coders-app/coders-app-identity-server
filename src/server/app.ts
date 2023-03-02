@@ -14,7 +14,7 @@ import { partialPaths, paths } from "./routers/paths.js";
 import setHeaderCredentials from "./middlewares/setHeaderCredentials/setHeaderCredentials.js";
 import appAuthenticationNames from "../constants/appAuthenticationNames.js";
 
-const { current: currentApp, apiGateway } = appAuthenticationNames;
+const { current: currentApp } = appAuthenticationNames;
 
 const { checkApiKey } = apiKeyAuthenticator;
 
@@ -42,11 +42,7 @@ app.use(
   swaggerUi.setup(openApiDocument)
 );
 
-app.use(
-  partialPaths.users.base,
-  checkApiKey(currentApp, apiGateway),
-  usersRouter
-);
+app.use(partialPaths.users.base, checkApiKey(currentApp), usersRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
