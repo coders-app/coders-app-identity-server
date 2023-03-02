@@ -1,9 +1,14 @@
-import type { NextFunction, Response, Request } from "express";
+import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import config from "../../../config.js";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
-import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
+import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
+import sendEmail from "../../../email/sendEmail/sendEmail.js";
 import { environment } from "../../../loadEnvironments.js";
+import PasswordHasherBcrypt from "../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js";
 import type {
   CustomRequest,
   CustomTokenPayload,
@@ -11,18 +16,13 @@ import type {
   UserCredentials,
   UserData,
 } from "../../types.js";
-import sendEmail from "../../../email/sendEmail/sendEmail.js";
-import createRegisterEmail from "../../../email/emailTemplates/createRegisterEmail.js";
-import config from "../../../config.js";
-import mongoose from "mongoose";
-import PasswordHasherBcrypt from "../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js";
 
 const {
   jwt: { jwtSecret, tokenExpiry },
 } = environment;
 
 const {
-  successCodes: { createdCode, okCode },
+  successCodes: { createdCode, okCode, noContentSuccessCode },
   clientErrors: { conflictCode, unauthorizedCode },
   serverErrors: { internalServerErrorCode },
 } = httpStatusCodes;
@@ -202,4 +202,8 @@ export const getUserDetails = (req: CustomRequest, res: Response) => {
   const { id, isAdmin, name } = req.userDetails;
 
   res.status(okCode).json({ userPayload: { name, isAdmin, id } });
+};
+
+export const logoutUser = (req: Request, res: Response) => {
+  res.clearCookie(cookieName).status(noContentSuccessCode);
 };
