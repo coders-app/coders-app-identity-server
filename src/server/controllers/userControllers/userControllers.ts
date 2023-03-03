@@ -5,6 +5,7 @@ import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
 import { environment } from "../../../loadEnvironments.js";
 import type {
+  CustomRequest,
   CustomTokenPayload,
   UserActivationCredentials,
   UserCredentials,
@@ -195,4 +196,10 @@ export const activateUser = async (
   } catch (error: unknown) {
     next(error);
   }
+};
+
+export const getUserDetails = (req: CustomRequest, res: Response) => {
+  const { id, isAdmin, name } = req.userDetails;
+
+  res.status(okCode).json({ userPayload: { name, isAdmin, id } });
 };

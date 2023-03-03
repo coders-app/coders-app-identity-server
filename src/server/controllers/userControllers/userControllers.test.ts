@@ -2,11 +2,16 @@ import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
 import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
-import { activateUser, loginUser, registerUser } from "./userControllers.js";
+import {
+  activateUser,
+  getUserDetails,
+  loginUser,
+  registerUser,
+} from "./userControllers.js";
 import CustomError from "../../../CustomError/CustomError.js";
 import { mockToken } from "../../../testUtils/mocks/mockToken.js";
 import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
-import type { UserWithId } from "../../types.js";
+import type { CustomRequest, UserWithId } from "../../types.js";
 import { getMockUserData } from "../../../factories/userDataFactory.js";
 import { getMockUser } from "../../../factories/userFactory.js";
 import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
@@ -260,6 +265,27 @@ describe("Given an activateUser function", () => {
       await activateUser(req as Request, null, next);
 
       expect(next).toHaveBeenCalledWith(invalidKeyError);
+    });
+  });
+});
+
+describe("Given a getUserDetails controller", () => {
+  describe("When it receives a CustomRequest with user details id: '1234', name: 'Fulanito', and isAdmin 'false'", () => {
+    test("Then it should invoke response's method status with 200 and json with with received user details", () => {
+      const userDetails = {
+        id: "1234",
+        name: "Fulanito",
+        isAdmin: false,
+      };
+
+      const req: Partial<CustomRequest> = {
+        userDetails,
+      };
+
+      getUserDetails(req as CustomRequest, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(okCode);
+      expect(res.json).toHaveBeenCalledWith({ userPayload: userDetails });
     });
   });
 });
