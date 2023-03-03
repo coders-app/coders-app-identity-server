@@ -29,6 +29,10 @@ jobs:
           EMAIL_SENDER: ${{ secrets.JWT_SECRET }}
           TOKEN_EXPIRY: ${{ secrets.TOKEN_EXPIRY}}
           APP_NAME: ${{ secrets.APP_NAME}}
+          API_GATEWAY_KEY: ${{ secrets.API_GATEWAY_KEY}}
+          REDIS_HOST: ${{ secrets.REDIS_HOST}}
+          REDIS_PORT: ${{ secrets.REDIS_PORT}}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD}}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
