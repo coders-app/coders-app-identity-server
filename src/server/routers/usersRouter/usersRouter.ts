@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validate } from "express-validation";
 import {
   activateUser,
+  getUserDetails,
   loginUser,
   registerUser,
 } from "../../controllers/userControllers/userControllers.js";
@@ -11,7 +12,7 @@ import activateUserSchema from "../../schemas/activateUserSchema.js";
 import { noAbortEarly } from "../../schemas/validateOptions.js";
 import { partialPaths } from "../paths.js";
 import cookieParser from "cookie-parser";
-import userAuthentication from "../../controllers/authControllers/authControllers.js";
+import auth from "../../middlewares/auth/auth.js";
 
 // eslint-disable-next-line new-cap
 const usersRouter = Router();
@@ -36,6 +37,6 @@ usersRouter.post(
 
 usersRouter.use(cookieParser());
 
-usersRouter.get(partialPaths.users.verifyToken, userAuthentication);
+usersRouter.get(partialPaths.users.verifyToken, auth, getUserDetails);
 
 export default usersRouter;
