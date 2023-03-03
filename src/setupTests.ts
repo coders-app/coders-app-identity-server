@@ -1,10 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import CustomError from "./CustomError/CustomError";
-import { environment } from "./loadEnvironments";
-import appAuthenticationNames from "./constants/appAuthenticationNames";
-const { apiGatewayKey } = environment;
+import requestHeaders from "./constants/requestHeaders";
+import {
+  mockHeaderApiKey,
+  mockHeaderApiName,
+} from "./testUtils/mocks/mockRequestHeaders";
 
-const { apiKeyHeader, apiNameHeader, apiGateway } = appAuthenticationNames;
+const { apiKeyHeader, apiNameHeader } = requestHeaders;
 
 jest.mock("./utils/loadJson/loadJson", () => ({
   loadJson: () => ({}),
@@ -24,8 +26,8 @@ jest.mock("coders-app-api-key-authenticator", () => ({
         );
 
         if (
-          req.header(apiKeyHeader) !== apiGatewayKey ||
-          req.header(apiNameHeader) !== apiGateway
+          req.header(apiKeyHeader) !== mockHeaderApiKey ||
+          req.header(apiNameHeader) !== mockHeaderApiName
         ) {
           next(invalidKeyError);
           return;

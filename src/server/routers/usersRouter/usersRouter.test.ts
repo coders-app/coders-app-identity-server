@@ -27,14 +27,14 @@ import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
-import appAuthenticationNames from "../../../constants/appAuthenticationNames";
-import { environment } from "../../../loadEnvironments";
-
+import requestHeaders from "../../../constants/requestHeaders";
+import {
+  mockHeaderApiKey,
+  mockHeaderApiName,
+} from "../../../testUtils/mocks/mockRequestHeaders";
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
-const { apiGatewayKey } = environment;
-
-const { apiKeyHeader, apiNameHeader, apiGateway } = appAuthenticationNames;
+const { apiKeyHeader, apiNameHeader } = requestHeaders;
 
 const {
   singleSignOnCookie: { cookieName },
@@ -71,8 +71,8 @@ describe("Given a POST /users/register endpoint", () => {
 
       const response: { body: { user: UserStructure } } = await request(app)
         .post(paths.users.register)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(newUser)
         .expect(createdCode);
 
@@ -97,8 +97,8 @@ describe("Given a POST /users/register endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.register)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(existingUser)
         .expect(conflictCode);
 
@@ -119,8 +119,8 @@ describe("Given a POST /users/register endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.register)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(emptyUser)
         .expect(badRequestCode);
 
@@ -131,13 +131,13 @@ describe("Given a POST /users/register endpoint", () => {
   describe("When it receives a request with name 'Luis', email 'luisito@isdicoders.com' and an incorrect api key in the header 'X-API-KEY' and 'api-gateway' in the header 'X-API-NAME'", () => {
     test("Then it should respond with status 401 and the error 'Invalid API Key'", async () => {
       const newUser = getMockUserData({ name: luisName, email: luisEmail });
-      const incorrectApiGatewayKey = "incorrect key";
+      const incorrectmockHeaderApiKey = "incorrect key";
       const expectedErrorMessage = "Invalid API Key";
 
       const response: { body: { error: string } } = await request(app)
         .post(paths.users.register)
-        .set(apiKeyHeader, incorrectApiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, incorrectmockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(newUser)
         .expect(unauthorizedCode);
 
@@ -185,8 +185,8 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send({ email, password })
         .expect(okCode);
 
@@ -214,8 +214,8 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send({ email, password: incorrectPassword })
         .expect(unauthorizedCode);
 
@@ -233,8 +233,8 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send({ email, password })
         .expect(unauthorizedCode);
 
@@ -252,8 +252,8 @@ describe("Given a POST /users/login endpoint", () => {
 
       const response = await request(app)
         .post(paths.users.login)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send({ email, password })
         .expect(badRequestCode);
 
@@ -294,8 +294,8 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${luisitoId}`)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(activationBody)
         .expect(okCode);
 
@@ -312,8 +312,8 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${invalidActivationKey}`)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -347,8 +347,8 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${martitaId}`)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(activationBody)
         .expect(unauthorizedCode);
 
@@ -367,8 +367,8 @@ describe("Given a POST /users/activate endpoint", () => {
 
       const response = await request(app)
         .post(`${paths.users.activate}?activationKey=${activationKey}`)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(activationBody)
         .expect(badRequestCode);
 
@@ -388,8 +388,8 @@ describe("Given a GET /verify-token endpoint", () => {
         body: { userPayload: CustomTokenPayload };
       } = await request(app)
         .get(paths.users.verifyToken)
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
@@ -405,8 +405,8 @@ describe("Given a GET /verify-token endpoint", () => {
       } = await request(app)
         .get(paths.users.verifyToken)
         .set("Cookie", [correctCookie])
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .send(mockTokenPayload)
         .expect(expectedStatus);
 
@@ -423,8 +423,8 @@ describe("Given a GET /verify-token endpoint", () => {
       } = await request(app)
         .get(paths.users.verifyToken)
         .set("Cookie", [incorrectCookie])
-        .set(apiKeyHeader, apiGatewayKey)
-        .set(apiNameHeader, apiGateway)
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);

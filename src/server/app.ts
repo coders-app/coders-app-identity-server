@@ -12,9 +12,8 @@ import usersRouter from "./routers/usersRouter/usersRouter.js";
 import { environment } from "../loadEnvironments.js";
 import { partialPaths, paths } from "./routers/paths.js";
 import setHeaderCredentials from "./middlewares/setHeaderCredentials/setHeaderCredentials.js";
-import appAuthenticationNames from "../constants/appAuthenticationNames.js";
 
-const { current: currentApp } = appAuthenticationNames;
+const { appName: currentApp } = environment;
 
 const { checkApiKey } = apiKeyAuthenticator;
 
