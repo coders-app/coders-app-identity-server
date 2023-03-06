@@ -1,34 +1,32 @@
-import type { Request, NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
+import type { NextFunction } from "express";
 import CustomError from "../../../CustomError/CustomError";
+import config from "../../../config";
+import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes";
 import {
   mockToken,
   mockTokenPayload,
 } from "../../../testUtils/mocks/mockToken";
-import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes";
-import userAuthentication from "./authControllers";
-import config from "../../../config";
-
-const {
-  clientErrors: { unauthorizedCode },
-} = httpStatusCodes;
+import type { CustomRequest } from "../../types";
+import auth from "./auth";
 
 const {
   singleSignOnCookie: { cookieName },
 } = config;
 
-const req: Partial<Request> = {};
+const {
+  clientErrors: { unauthorizedCode },
+} = httpStatusCodes;
 
-const res: Partial<Response> = {
-  status: jest.fn().mockReturnThis(),
-  json: jest.fn(),
-};
+const req: Partial<CustomRequest> = {};
 
 const next: NextFunction = jest.fn();
 
-beforeEach(() => jest.clearAllMocks());
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-describe("Given the auth controller", () => {
+describe("Given the auth middleware", () => {
   const cookies = {
     [cookieName]: mockToken,
   };
@@ -48,7 +46,7 @@ describe("Given the auth controller", () => {
 
       req.cookies = {};
 
-      userAuthentication(req as Request, res as Response, next);
+      auth(req as CustomRequest, null, next);
 
       expect(next).toHaveBeenCalledWith(noTokenError);
     });
@@ -66,37 +64,36 @@ describe("Given the auth controller", () => {
       jwt.verify = jest.fn().mockReturnValueOnce(jwtError);
       req.cookies = incorrectCookies;
 
-      userAuthentication(req as Request, res as Response, next);
+      auth(req as CustomRequest, null, next);
 
       expect(next).toHaveBeenCalledWith(notVerifyTokenError);
     });
   });
 
-  describe("When it receives a request with an auth header that has a valid token", () => {
-    test("Then it should invoke the response method status with a 200", () => {
-      const expectedStatus = 200;
+  describe("When it receives a request with a cookie that has a valid token", () => {
+    test("Then it should add id, name and isAdmin to userDetails in the request", () => {
       const mockVerifyToken = mockTokenPayload;
+      const { id, isAdmin, name } = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
       req.cookies = cookies;
 
-      userAuthentication(req as Request, res as Response, next);
+      auth(req as CustomRequest, null, next);
 
-      expect(res.status).toHaveBeenCalledWith(expectedStatus);
-      expect(res.json).toHaveBeenCalledWith({ userPayload: mockVerifyToken });
+      expect(req.userDetails).toHaveProperty("id", id);
+      expect(req.userDetails).toHaveProperty("name", name);
+      expect(req.userDetails).toHaveProperty("isAdmin", isAdmin);
     });
 
-    test("Then it should invoke the response method json with name 'admin'and id: '637ca68b2e7c24060c5c7e20' as payload", () => {
+    test("Then it should invoke next", () => {
       const mockVerifyToken = mockTokenPayload;
 
       jwt.verify = jest.fn().mockReturnValue(mockVerifyToken);
       req.cookies = cookies;
 
-      userAuthentication(req as Request, res as Response, next);
+      auth(req as CustomRequest, null, next);
 
-      expect(res.json).toHaveBeenCalledWith({
-        userPayload: mockVerifyToken,
-      });
+      expect(next).toHaveBeenCalled();
     });
   });
 });

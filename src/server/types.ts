@@ -1,3 +1,5 @@
+import type * as core from "express-serve-static-core";
+import type { Request } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 
 export interface UserCredentials {
@@ -28,4 +30,16 @@ export interface CustomTokenPayload
 
 export interface UserWithId extends UserStructure {
   _id: string;
+}
+
+export interface CustomRequest<
+  P = core.ParamsDictionary,
+  ResBody = any,
+  ReqBody = any
+> extends Request<P, ResBody, ReqBody> {
+  userDetails: {
+    id: string;
+    isAdmin: boolean;
+    name: string;
+  };
 }
