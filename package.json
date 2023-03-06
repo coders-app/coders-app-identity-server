@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "coders-app-api-key-authenticator": "github:coders-app/coders-app-api-key-authenticator",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "debug": "^4.3.4",

@@ -17,6 +17,7 @@ const {
   EMAIL_SENDER: emailSender,
   TOKEN_EXPIRY: tokenExpiry,
   APP_NAME: appName,
+  API_GATEWAY_KEY: apiGatewayKey,
 } = process.env;
 
 export const environment = {
@@ -40,4 +41,5 @@ export const environment = {
     emailSender,
   },
   appName,
+  apiGatewayKey,
 };
