@@ -1,37 +1,38 @@
-import request from "supertest";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import connectDatabase from "../../../database/connectDatabase";
 import mongoose from "mongoose";
-import app from "../../app.js";
+import request from "supertest";
+import config from "../../../config";
+import requestHeaders from "../../../constants/requestHeaders";
 import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
+import connectDatabase from "../../../database/connectDatabase";
 import User from "../../../database/models/User.js";
+import { getMockUserData } from "../../../factories/userDataFactory";
+import { getMockUser } from "../../../factories/userFactory";
+import cookieParser from "../../../testUtils/cookieParser";
+import {
+  mockHeaderApiKey,
+  mockHeaderApiName,
+} from "../../../testUtils/mocks/mockRequestHeaders";
+import {
+  mockToken,
+  mockTokenPayload,
+} from "../../../testUtils/mocks/mockToken";
+import {
+  luisEmail,
+  luisName,
+  martaEmail,
+} from "../../../testUtils/mocks/mockUsers";
+import app from "../../app.js";
 import type {
   CustomTokenPayload,
   UserActivationCredentials,
   UserData,
   UserStructure,
 } from "../../types";
-import {
-  luisEmail,
-  luisName,
-  martaEmail,
-} from "../../../testUtils/mocks/mockUsers";
-import { getMockUserData } from "../../../factories/userDataFactory";
-import { getMockUser } from "../../../factories/userFactory";
-import cookieParser from "../../../testUtils/cookieParser";
 import { paths } from "../paths";
-import config from "../../../config";
-import {
-  mockToken,
-  mockTokenPayload,
-} from "../../../testUtils/mocks/mockToken";
-import requestHeaders from "../../../constants/requestHeaders";
-import {
-  mockHeaderApiKey,
-  mockHeaderApiName,
-} from "../../../testUtils/mocks/mockRequestHeaders";
+
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
 const { apiKeyHeader, apiNameHeader } = requestHeaders;
@@ -44,7 +45,7 @@ const correctCookie = `${cookieName}=${mockToken}`;
 const incorrectCookie = `${cookieName}=incorrect-cookie`;
 
 const {
-  successCodes: { createdCode, okCode },
+  successCodes: { createdCode, okCode, noContentSuccessCode },
   clientErrors: { conflictCode, badRequestCode, unauthorizedCode },
 } = httpStatusCodes;
 
@@ -428,6 +429,21 @@ describe("Given a GET /verify-token endpoint", () => {
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", expectedMessage);
+    });
+  });
+});
+
+describe("Given a POST /users/logout endpoint", () => {
+  describe("When it receives a request with a cookie", () => {
+    test("Then it should respond without a cookie and a status 204", async () => {
+      const response = await request(app)
+        .post(paths.users.logout)
+        .set("Cookie", [correctCookie])
+        .set(apiKeyHeader, mockHeaderApiKey)
+        .set(apiNameHeader, mockHeaderApiName)
+        .expect(noContentSuccessCode);
+
+      expect(response.headers).not.toHaveProperty("Cookie", [correctCookie]);
     });
   });
 });

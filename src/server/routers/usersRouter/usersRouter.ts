@@ -6,17 +6,14 @@ import {
   getUserDetails,
   loginUser,
   logoutUser,
-  registerUser
+  registerUser,
 } from "../../controllers/userControllers/userControllers.js";
+import auth from "../../middlewares/auth/auth.js";
 import activateUserSchema from "../../schemas/activateUserSchema.js";
 import loginUserSchema from "../../schemas/loginUserSchema.js";
 import registerUserSchema from "../../schemas/registerUserSchema.js";
 import { noAbortEarly } from "../../schemas/validateOptions.js";
 import { partialPaths } from "../paths.js";
-<<<<<<< HEAD
-import auth from "../../middlewares/auth/auth.js";
-=======
->>>>>>> 3dde2a2 (Add log out endpoint)
 
 // eslint-disable-next-line new-cap
 const usersRouter = Router();
@@ -42,6 +39,6 @@ usersRouter.use(cookieParser());
 
 usersRouter.get(partialPaths.users.verifyToken, auth, getUserDetails);
 
-usersRouter.post(partialPaths.users.logout, logoutUser);
+usersRouter.post(partialPaths.users.logout, auth, logoutUser);
 
 export default usersRouter;
