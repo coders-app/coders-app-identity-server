@@ -15,6 +15,7 @@ import {
   activateUser,
   getUserDetails,
   loginUser,
+  logoutUser,
   registerUser,
 } from "./userControllers.js";
 
@@ -48,6 +49,7 @@ const req: Partial<Request> = {};
 
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
+  sendStatus: jest.fn(),
   cookie: jest.fn().mockReturnThis(),
   clearCookie: jest.fn().mockReturnThis(),
   json: jest.fn(),
@@ -298,7 +300,7 @@ describe("Given a logoutUser controller", () => {
       logoutUser(req as Request, res as Response);
 
       expect(res.clearCookie).toHaveBeenCalledWith(cookieName);
-      expect(res.status).toHaveBeenCalledWith(noContentSuccessCode);
+      expect(res.sendStatus).toHaveBeenCalledWith(noContentSuccessCode);
     });
   });
 });

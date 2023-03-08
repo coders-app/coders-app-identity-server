@@ -205,5 +205,5 @@ export const getUserDetails = (req: CustomRequest, res: Response) => {
 };
 
 export const logoutUser = (req: Request, res: Response) => {
-  res.clearCookie(cookieName).status(noContentSuccessCode);
+  res.clearCookie(cookieName).sendStatus(noContentSuccessCode);
 };
