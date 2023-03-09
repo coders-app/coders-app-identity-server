@@ -1,27 +1,29 @@
-import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
-import User from "../../../database/models/User.js";
+import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
+import config from "../../../config.js";
 import httpStatusCodes from "../../../constants/statusCodes/httpStatusCodes.js";
+import CustomError from "../../../CustomError/CustomError.js";
+import User from "../../../database/models/User.js";
+import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
+import { getMockUserData } from "../../../factories/userDataFactory.js";
+import { getMockUser } from "../../../factories/userFactory.js";
+import { mockToken } from "../../../testUtils/mocks/mockToken.js";
+import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
+import type { CustomRequest, UserWithId } from "../../types.js";
 import {
   activateUser,
   getUserDetails,
   loginUser,
+  logoutUser,
   registerUser,
 } from "./userControllers.js";
-import CustomError from "../../../CustomError/CustomError.js";
-import { mockToken } from "../../../testUtils/mocks/mockToken.js";
-import { luisEmail } from "../../../testUtils/mocks/mockUsers.js";
-import type { CustomRequest, UserWithId } from "../../types.js";
-import { getMockUserData } from "../../../factories/userDataFactory.js";
-import { getMockUser } from "../../../factories/userFactory.js";
-import { getMockUserCredentials } from "../../../factories/userCredentialsFactory.js";
-import config from "../../../config.js";
-import mongoose from "mongoose";
 
 const mockPasswordHash: jest.Mock<string> = jest.fn(() => "");
 const mockPasswordCompare: jest.Mock<boolean | Promise<Error>> = jest.fn(
   () => true
 );
+
 jest.mock("../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js", () =>
   jest.fn().mockImplementation(() => ({
     passwordHash: () => mockPasswordHash(),
@@ -32,7 +34,7 @@ jest.mock("../../../utils/PasswordHasherBcrypt/PasswordHasherBcrypt.js", () =>
 jest.mock("../../../email/sendEmail/sendEmail.js");
 
 const {
-  successCodes: { createdCode, okCode },
+  successCodes: { createdCode, okCode, noContentSuccessCode },
   clientErrors: { unauthorizedCode, conflictCode },
 } = httpStatusCodes;
 const {
@@ -47,7 +49,9 @@ const req: Partial<Request> = {};
 
 const res: Partial<Response> = {
   status: jest.fn().mockReturnThis(),
+  sendStatus: jest.fn(),
   cookie: jest.fn().mockReturnThis(),
+  clearCookie: jest.fn().mockReturnThis(),
   json: jest.fn(),
 };
 
@@ -286,6 +290,17 @@ describe("Given a getUserDetails controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(okCode);
       expect(res.json).toHaveBeenCalledWith({ userPayload: userDetails });
+    });
+  });
+});
+
+describe("Given a logoutUser controller", () => {
+  describe("When it receives a request with cookie 'coders_identity_token' and a response", () => {
+    test("Then it should invoke the response's method clearCookie with 'coders_identity_token' and status with 204", () => {
+      logoutUser(req as Request, res as Response);
+
+      expect(res.clearCookie).toHaveBeenCalledWith(cookieName);
+      expect(res.sendStatus).toHaveBeenCalledWith(noContentSuccessCode);
     });
   });
 });
