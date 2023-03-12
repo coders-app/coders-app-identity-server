@@ -1,11 +1,9 @@
 import express from "express";
 import morgan from "morgan";
-import cors from "cors";
 import basicAuth from "express-basic-auth";
 import swaggerUi from "swagger-ui-express";
 import * as apiKeyAuthenticator from "coders-app-api-key-authenticator";
 import pingPongProtocolRouter from "./routers/pingPongProtocolRouter/pingPongProtocolRouter.js";
-import corsOptions from "./cors/corsOptions.js";
 import generalError, { unknownEndpoint } from "./middlewares/errors/errors.js";
 import openApiDocument from "../openapi/index.js";
 import usersRouter from "./routers/usersRouter/usersRouter.js";
@@ -21,7 +19,6 @@ const app = express();
 
 app.use(setHeaderCredentials);
 
-app.use(cors(corsOptions));
 app.disable("x-powered-by");
 
 app.use(morgan("dev"));
