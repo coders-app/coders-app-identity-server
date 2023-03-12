@@ -223,6 +223,34 @@
           }
         }
       }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Logout a user",
+        "security": [
+          {
+            "Cookie Auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "cookie",
+            "name": "coders_identity_token",
+            "required": true,
+            "description": "A valid JWT token must be passed in the 'coders_identity_token' cookie",
+            "schema": {
+              "type": "string",
+              "example": "coders_identity_token=xx.yy.zz"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Delete cookie name"
+          }
+        }
+      }
     }
   }
 }
