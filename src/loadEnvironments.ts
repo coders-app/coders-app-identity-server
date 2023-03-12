@@ -6,7 +6,6 @@ const {
   PORT: port,
   MONGODB_URL: mongoDbUrl,
   MONGODB_DEBUG: mongoDbDebug,
-  ORIGIN_WHITELIST: originWhitelist,
   JWT_SECRET: jwtSecret,
   SWAGGER_BASIC_AUTH_USERNAME: swaggerBasicAuthUsername,
   SWAGGER_BASIC_AUTH_PASSWORD: swaggerBasicAuthPassword,
@@ -24,7 +23,6 @@ export const environment = {
   port: +port || 4000,
   mongoDbUrl,
   mongoDbDebug: mongoDbDebug === "true",
-  originWhitelist: originWhitelist.split(","),
   jwt: {
     jwtSecret,
     tokenExpiry: +tokenExpiry,
